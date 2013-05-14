@@ -12,13 +12,12 @@ class Example(wx.Frame):
     def __init__(self, parent, title):
         super(Example, self).__init__(parent, title=title, 
             size=(790, 350))
-            
+        self.filter = ""
         self.InitUI()
         self.Centre()
         self.Show()     
         
     def InitUI(self):
-    
         panel = wx.Panel(self)
 
         font = wx.SystemSettings_GetFont(wx.SYS_SYSTEM_FONT)
@@ -46,8 +45,9 @@ class Example(wx.Frame):
         vbox.Add((-1, 10))
 
         hbox3 = wx.BoxSizer(wx.HORIZONTAL)
-        lc = wx.ListCtrl(panel, style=wx.LC_LIST)
-        hbox3.Add(lc, proportion=1, flag=wx.EXPAND)
+        self.lc = wx.ListCtrl(panel, style=wx.BORDER_SUNKEN)
+        self.lc.InsertColumn(0,"Callsign")
+        hbox3.Add(self.lc, proportion=1, flag=wx.EXPAND)
         vbox.Add(hbox3, proportion=1, flag=wx.LEFT|wx.RIGHT|wx.EXPAND, 
             border=10)
 
@@ -64,9 +64,20 @@ class Example(wx.Frame):
 
         panel.SetSizer(vbox)
 
+        self.DisplayView()
+
+    def DisplayView(self):
+        self.lc.DeleteAllItems()
+        j = 0
+        for i in demo_callsigns:
+            if( self.filter == "" or i.upper().find(self.filter.upper()) != -1 ):
+                 self.lc.InsertStringItem( j, i )
+                 pass
+            j = j + 1
+
     def OnSearchBoxUpdate(self,evnt):
-        print "text update:",self.tc.GetValue()
-        pass
+        self.filter = self.tc.GetValue()
+        self.DisplayView()
 
     def OnCloseButtonClicked(self,evnt):
         self.Destroy()
