@@ -5,7 +5,7 @@
 
 import wx
 
-demo_callsigns=("KD0LIX","KC5YTI","KD0JWD")
+demo_callsigns=("KD0LIX","KC5YTI","KD0JWD","KD0ABC")
 
 class Example(wx.Frame):
   
@@ -31,6 +31,7 @@ class Example(wx.Frame):
         st1.SetFont(font)
         hbox1.Add(st1, flag=wx.RIGHT, border=8)
         tc = wx.TextCtrl(panel)
+        tc.Bind(wx.EVT_TEXT, self.OnSearchBoxUpdate)
         hbox1.Add(tc, proportion=1)
         vbox.Add(hbox1, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
 
@@ -62,6 +63,9 @@ class Example(wx.Frame):
         vbox.Add(hbox5, flag=wx.ALIGN_RIGHT|wx.RIGHT, border=10)
 
         panel.SetSizer(vbox)
+
+    def OnSearchBoxUpdate(self,evnt):
+        pass
 
     def OnCloseButtonClicked(self,evnt):
         self.Destroy()
