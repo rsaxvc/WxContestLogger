@@ -30,9 +30,9 @@ class Example(wx.Frame):
         st1 = wx.StaticText(panel, label='Contact Callsign')
         st1.SetFont(font)
         hbox1.Add(st1, flag=wx.RIGHT, border=8)
-        tc = wx.TextCtrl(panel)
-        tc.Bind(wx.EVT_TEXT, self.OnSearchBoxUpdate)
-        hbox1.Add(tc, proportion=1)
+        self.tc = wx.TextCtrl(panel)
+        self.tc.Bind(wx.EVT_TEXT, self.OnSearchBoxUpdate)
+        hbox1.Add(self.tc, proportion=1)
         vbox.Add(hbox1, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
 
         vbox.Add((-1, 10))
@@ -46,8 +46,8 @@ class Example(wx.Frame):
         vbox.Add((-1, 10))
 
         hbox3 = wx.BoxSizer(wx.HORIZONTAL)
-        tc2 = wx.TextCtrl(panel, style=wx.TE_MULTILINE)
-        hbox3.Add(tc2, proportion=1, flag=wx.EXPAND)
+        lc = wx.ListCtrl(panel, style=wx.LC_LIST)
+        hbox3.Add(lc, proportion=1, flag=wx.EXPAND)
         vbox.Add(hbox3, proportion=1, flag=wx.LEFT|wx.RIGHT|wx.EXPAND, 
             border=10)
 
@@ -65,6 +65,7 @@ class Example(wx.Frame):
         panel.SetSizer(vbox)
 
     def OnSearchBoxUpdate(self,evnt):
+        print "text update:",self.tc.GetValue()
         pass
 
     def OnCloseButtonClicked(self,evnt):
