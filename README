@@ -1,0 +1,15 @@
+WxContestLogger is a ham radio contest logging application written in python.
+
+Currently, I'm prototyping individual features in separate folders.
+
+features:
+	WxWidgets based UI
+	network support
+		local network discovery - no goofy windows workgroups misconfiguration
+		network updates are single UDP frames
+		UDP frames are smaller than default 802.11 MTU
+		self-syncronizing - two boxes easily share their results
+	sane database format - likely SQLite, not ms-access
+	log export formats - excel, csv, xml?
+	multi-OS support
+	not written in VB6!
