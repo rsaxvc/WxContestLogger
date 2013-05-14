@@ -5,6 +5,8 @@
 
 import wx
 
+demo_callsigns=("KD0LIX","KC5YTI","KD0JWD")
+
 class Example(wx.Frame):
   
     def __init__(self, parent, title):
@@ -54,11 +56,15 @@ class Example(wx.Frame):
         btn1 = wx.Button(panel, label='Ok', size=(70, 30))
         hbox5.Add(btn1)
         btn2 = wx.Button(panel, label='Close', size=(70, 30))
+        btn2.Bind(wx.EVT_BUTTON, self.OnCloseButtonClicked)
+
         hbox5.Add(btn2, flag=wx.LEFT|wx.BOTTOM, border=5)
         vbox.Add(hbox5, flag=wx.ALIGN_RIGHT|wx.RIGHT, border=10)
 
         panel.SetSizer(vbox)
 
+    def OnCloseButtonClicked(self,evnt):
+        self.Destroy()
 
 if __name__ == '__main__':
     app = wx.App()
