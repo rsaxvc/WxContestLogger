@@ -13,10 +13,14 @@ class frame:
 	their_callsign=""
 	text_blob=""
 	def pack( self ):
+		#this should be redone with json
+		"convert information to packet"
 		import pickle
 		import zlib
 		return zlib.compress( pickle.dumps( self ) )
 	def unpack( self, blob ):
+		#this should be redone with json
+		"convert packet to information"
 		import pickle
 		import zlib
 		p = pickle.loads( zlib.decompress( blob ) )
