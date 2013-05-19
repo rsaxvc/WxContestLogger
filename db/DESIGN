@@ -1,0 +1,14 @@
+clients communicate with differences
+	Each difference contains:
+		author uuid
+		type:
+			Upsert
+			Delete
+		serial number - differences must be applied in order
+
+database stores
+	all differences
+	table of current system state
+	table of all known clients
+		uuid
+		current difference number
