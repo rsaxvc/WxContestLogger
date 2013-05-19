@@ -16,12 +16,14 @@ sock = socket.socket(socket.AF_INET, # Internet
 
 id = 0
 while True:
-	record = (id, "KD0LIX", random.randrange(100), "20 Meter Band", "Digital")
 	message = dbframe.frame()
 	message.my_callsign = "KD0LIX"
 	message.their_callsign = "KD0IXY"
-	message.type = dbframe.frame.dbTypeInsert
+	message.type = dbframe.frame.dbTypeUpsert
+	message.datetime = "Wednesday"
+	message.sequence_number = id
+	message.affected_record = 3
+	id = id + 1
 
-	# Pickle dictionary using protocol 0.
 	sock.sendto(message.pack(), (UDP_IP, UDP_PORT))
 	time.sleep(1)

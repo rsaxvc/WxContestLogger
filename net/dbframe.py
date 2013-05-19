@@ -1,36 +1,40 @@
 class frame:
 	"""This is a container for network frames"""
-	dbTypeInsert=0
-	dbTypeUpdate=1
-	dbTypeDelete=2
+	dbTypeUpsert=0
+	dbTypeDelete=1
 
-	type=dbTypeInsert
-	source=""
+	type=0
 	sequence_number=-1
 	affected_record=-1
-	datetime=-1
+	datetime=""
 	my_callsign=""
 	their_callsign=""
 	text_blob=""
+
 	def pack( self ):
-		#this should be redone with json
-		"convert information to packet"
-		import pickle
+		"convert class to packet"
+		d={}
+		d['type']=self.type
+		d['call0']=self.my_callsign
+		d['call1']=self.their_callsign
+		d['dt']=self.datetime
+		d['seq'] = self.sequence_number
+		d['rec'] = self.affected_record
+		import json
 		import zlib
-		return zlib.compress( pickle.dumps( self ) )
+		return zlib.compress( json.dumps( d ) )
+
 	def unpack( self, blob ):
-		#this should be redone with json
-		"convert packet to information"
-		import pickle
+		"convert packet to class"
+		import json
 		import zlib
-		p = pickle.loads( zlib.decompress( blob ) )
-		self.type = p.type
-		self.my_callsign = p.my_callsign
-		self.their_callsign = p.their_callsign
-		self.datetime = p.datetime
-		self.source = p.source
-		self.sequence_number = p.sequence_number
-		self.affected_record = p.affected_record
-		self.source = p.source
+		d = json.loads( zlib.decompress( blob ) )
+		self.type = d['type']
+		self.my_callsign = d['call0']
+		self.their_callsign = d['call1']
+		self.datetime = d['dt']
+		self.sequence_number = d['seq']
+		self.affected_record = d['rec']
+
 	def default(self):
 		pass
