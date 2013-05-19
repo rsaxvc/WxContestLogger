@@ -25,9 +25,3 @@ class settings_manager:
 
 	def put( _self, key, value ):
 		_self.settings.put( key, value )
-
-
-#c = settings_manager()
-#c.put( "Frank", "White" )
-#c.put( "Frank", "TwoFrank" )
-#c.save()
