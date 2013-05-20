@@ -7,7 +7,10 @@ clients communicate with differences
 		serial number - differences must be applied in order
 
 database stores
-	all differences
+	table of all differences
+		who
+		type
+		contact data(only for Upsert)
 	table of current system state
 	table of all known clients
 		uuid
