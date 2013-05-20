@@ -1,16 +1,13 @@
 from uuid import uuid4
 import os
-
+import paths
 import settings_io
 
 class settings_manager:
 	"a non-volatile key-value store"
 	def __init__(_self):
 		"open settings file and create a default if needed"
-		dirpath = os.path.expanduser("~")+"/.wxlogger/"
-		_self.configpath = dirpath + "config"
-		if not os.path.exists(dirpath):
-			os.makedirs(dirpath)
+		_self.configpath = paths.configdir + "config"
 		_self.settings = settings_io.settings_io()
 		try:
 			_self.settings.load( _self.configpath )
