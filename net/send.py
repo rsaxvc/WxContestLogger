@@ -23,6 +23,13 @@ while True:
 	message.datetime = "Wednesday"
 	message.sequence_number = id
 	message.affected_record = 3
+
+	sock.sendto(message.pack(), (UDP_IP, UDP_PORT))
+
+	message = dbframe.frame()
+	message.type = dbframe.frame.dbTypeDelete
+	message.sequence_number = id
+	message.affected_record = 3
 	id = id + 1
 
 	sock.sendto(message.pack(), (UDP_IP, UDP_PORT))
