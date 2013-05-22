@@ -16,11 +16,12 @@ class frame:
 		d={}
 		d['cid']=self.client_uuid
 		d['type']=self.type
-		d['call0']=self.my_callsign
-		d['call1']=self.their_callsign
-		d['dt']=self.datetime
 		d['seq'] = self.sequence_number
 		d['rec'] = self.affected_record
+		if( self.type == self.dbTypeUpsert ):
+			d['dt']=self.datetime
+			d['call0']=self.my_callsign
+			d['call1']=self.their_callsign
 		import json
 		import zlib
 		return zlib.compress( json.dumps( d ) )
@@ -32,11 +33,12 @@ class frame:
 		d = json.loads( zlib.decompress( blob ) )
 		self.client_uuid=d['cid']
 		self.type = d['type']
-		self.my_callsign = d['call0']
-		self.their_callsign = d['call1']
-		self.datetime = d['dt']
 		self.sequence_number = d['seq']
 		self.affected_record = d['rec']
+		if( self.type == self.dbTypeUpsert ):
+			self.my_callsign = d['call0']
+			self.their_callsign = d['call1']
+			self.datetime = d['dt']
 
 	def default(self):
 		pass
