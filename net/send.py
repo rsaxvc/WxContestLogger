@@ -19,7 +19,7 @@ while True:
 	message = dbframe.frame()
 	message.my_callsign = "KD0LIX"
 	message.their_callsign = "KD0IXY"
-	message.type = dbframe.frame.dbTypeUpsert
+	message.type = dbframe.frame.typeDbUpsert
 	message.datetime = "Wednesday"
 	message.sequence_number = id
 	message.affected_record = 3
@@ -27,7 +27,7 @@ while True:
 	sock.sendto(message.pack(), (UDP_IP, UDP_PORT))
 
 	message = dbframe.frame()
-	message.type = dbframe.frame.dbTypeDelete
+	message.type = dbframe.frame.typeDbDelete
 	message.sequence_number = id
 	message.affected_record = 3
 	id = id + 1
