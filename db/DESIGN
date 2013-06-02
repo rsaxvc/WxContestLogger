@@ -15,3 +15,11 @@ database stores
 	table of all known clients
 		uuid
 		current difference number
+
+processes
+	UI
+		searches
+		sends insert messages
+
+	backend
+		packet i/o
