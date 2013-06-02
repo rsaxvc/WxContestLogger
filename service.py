@@ -7,6 +7,23 @@ import dbframe
 import contactdb
 from settings_manager import settings_manager
 
+def process_incoming_packets( sock ):
+	"receive and handle new packets, for up to 1 second"
+	timeout = 1.0
+	stop_time = time.time() + timeout
+	while( timeout > 0.0 ):
+		sock.settimeout(timeout)
+		try:
+			blob1, addr = sock.recvfrom(2048)
+			frame = dbframe.framer()
+			frames = frame.unpack( blob1 )
+			for f in frames:
+				print "received ", len( blob1 ), " byte message"
+				handle_frame( f )
+		except socket.timeout:
+			break;
+		timeout = stop_time - time.time()
+
 def process_database_changes():
 	pass
 
@@ -78,32 +95,14 @@ UDP_PORT = 32250
 sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
 
-sock.settimeout(1.0) # block up to 1 second waiting for data
 sock.bind((UDP_IP, UDP_PORT))
 
 id = 0
 
 send_hello()
 while True:
-	#handle all receivable packets
-	while True:
-		try:
-			blob1, addr = sock.recvfrom(2048)
-			frame = dbframe.framer()
-			frames = frame.unpack( blob1 )
-			for f in frames:
-				print "received ", len( blob1 ), " byte message"
-				handle_frame( f )
-		except socket.timeout:
-			break;
-
+	process_incoming_packets(sock)
 	process_database_changes()
 	request_missing_changes()
 	send_periodic_packets()
 send_goodbye()
-
-print "UDP target IP:", UDP_IP
-print "UDP target port:", UDP_PORT
-
-sock = socket.socket(socket.AF_INET, # Internet
-                     socket.SOCK_DGRAM) # UDP
