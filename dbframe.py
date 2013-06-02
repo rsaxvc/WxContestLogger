@@ -1,4 +1,4 @@
-class frame:
+class framer:
 	"""This is a container for network frames"""
 
 	#commands that modify database state
@@ -12,43 +12,51 @@ class frame:
 	typeNetClientList=259		#list of clients w/uuid and current sequence number, response to 258
 	typeNetReqClientUpdates=260 #asks to list all upserts+deletes for specific UUID and list of seq ranges
 
-	client_uuid="00000000-0000-0000-0000-000000000000"
-	type=0
-	sequence_number=-1
-	affected_record=-1
-	datetime=""
-	my_callsign=""
-	their_callsign=""
-	text_blob=""
+	_frames=[]
 
-	def pack( self ):
+	def frame_hello( self, uuid ):
 		"convert class to packet"
 		d={}
-		d['cid']=self.client_uuid
-		d['type']=self.type
-		d['seq'] = self.sequence_number
-		d['rec'] = self.affected_record
-		if( self.type == self.typeDbUpsert ):
-			d['dt']=self.datetime
-			d['call0']=self.my_callsign
-			d['call1']=self.their_callsign
+		d['type']=self.typeNetHello
+		d['cid']=uuid
+		self._frames.append( d )
+
+	def frame_upsert( self, uuid, sequence_number, affected_record, datetime, mycall, theircall ):
+		d={}
+		d['type'] = self.typeDbUpsert
+		d['cid']  = uuid
+		d['seq']  = sequence_number
+		d['rec']  = affected_record
+		d['dt']   = datetime
+		d['mycall']= mycall
+		d['theircall']= theircall
+		self._frames.append( d )
+
+	def frame_delete( self, uuid, sequence_number, affected_record ):
+		d={}
+		d['type'] = self.typeDbDelete
+		d['cid']  = uuid
+		d['seq']  = sequence_number
+		d['rec']  = affected_record
+		self._frames.append( d )
+
+	def pack( self, mtu ):
 		import json
 		import zlib
-		return zlib.compress( json.dumps( d ) )
+		#what should happen here, is breaking the packet
+		#into multiple smaller onces so it fits in the
+		#mtu. Not implemented yet
+		p = zlib.compress( json.dumps( self._frames ) )
+		self._frames[:] = []
+		packets=[p]
+		return packets
 
 	def unpack( self, blob ):
 		"convert packet to class"
 		import json
 		import zlib
-		d = json.loads( zlib.decompress( blob ) )
-		self.client_uuid=d['cid']
-		self.type = d['type']
-		self.sequence_number = d['seq']
-		self.affected_record = d['rec']
-		if( self.type == self.typeDbUpsert ):
-			self.my_callsign = d['call0']
-			self.their_callsign = d['call1']
-			self.datetime = d['dt']
+		f = json.loads( zlib.decompress( blob ) )
+		return f
 
 	def default(self):
 		pass

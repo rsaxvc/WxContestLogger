@@ -5,6 +5,7 @@ import uuid
 
 import dbframe
 import contactdb
+from settings_manager import settings_manager
 
 def process_database_changes():
 	pass
@@ -14,28 +15,26 @@ def request_missing_changes():
 
 def send_periodic_packets():
 	global id
-	message = dbframe.frame()
-	message.my_callsign = "KD0LIX"
-	message.their_callsign = "KD0IXY"
-	message.type = dbframe.frame.typeDbUpsert
-	message.datetime = "Wednesday"
-	message.sequence_number = id
-	message.affected_record = 3
 
-	sock.sendto(message.pack(), (UDP_IP, UDP_PORT))
+	s = settings_manager()
+	uuid = s.get( "uuid" )
 
-	message = dbframe.frame()
-	message.type = dbframe.frame.typeDbDelete
-	message.sequence_number = id
-	message.affected_record = 3
+	messages = dbframe.framer()
+	messages.frame_upsert( uuid, id, 3, "Wednesday", "KD0LIX", "KD0IXY" )
+	id = id + 1
+	messages.frame_delete( uuid, id, 3 )
 	id = id + 1
 
-	sock.sendto(message.pack(), (UDP_IP, UDP_PORT))
+	packets = messages.pack( 1200 )
+	for p in packets:
+		sock.sendto( p, (UDP_IP, UDP_PORT) )
 
 def send_hello():
+	#broadcast a hello packet
 	pass
 
 def send_goodbye():
+	#broadcast a goodbye packet
 	pass
 
 def handle_frame_hello(frame):
@@ -58,15 +57,15 @@ def handle_frame_req_client_updates(frame):
 
 def handle_frame( frame ):
 	handlers={
-		frame.typeDbUpsert:handle_frame_upsert,
-		frame.typeDbDelete:handle_frame_delete,
-		frame.typeNetHello:handle_frame_hello,
-		frame.typeNetReqClientList:handle_frame_req_client_list,
-		frame.typeNetClientList:handle_frame_client_list,
-		frame.typeNetReqClientUpdates:handle_frame_req_client_updates,
+		dbframe.framer.typeDbUpsert:handle_frame_upsert,
+		dbframe.framer.typeDbDelete:handle_frame_delete,
+		dbframe.framer.typeNetHello:handle_frame_hello,
+		dbframe.framer.typeNetReqClientList:handle_frame_req_client_list,
+		dbframe.framer.typeNetClientList:handle_frame_client_list,
+		dbframe.framer.typeNetReqClientUpdates:handle_frame_req_client_updates,
 		}
 	try:
-		handlers[frame.type](frame)
+		handlers[frame['type']](frame)
 	except KeyError:
 		print "unknown frame type:",frame.type
 
@@ -90,10 +89,11 @@ while True:
 	while True:
 		try:
 			blob1, addr = sock.recvfrom(2048)
-			frame = dbframe.frame()
-			frame.unpack( blob1 )
-			print "received ", len( blob1 ), " byte message from:", frame.their_callsign
-			handle_frame( frame )
+			frame = dbframe.framer()
+			frames = frame.unpack( blob1 )
+			for f in frames:
+				print "received ", len( blob1 ), " byte message"
+				handle_frame( f )
 		except socket.timeout:
 			break;
 
