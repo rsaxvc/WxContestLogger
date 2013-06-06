@@ -4,6 +4,7 @@ class contactdb():
 	c=()
 	def open( conn ):
 		c = conn.cursor()
+
 	def close():
 		c.close()
 
