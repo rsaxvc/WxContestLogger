@@ -41,14 +41,38 @@ class framer:
 		self._frames.append( d )
 
 	def pack( self, mtu ):
+		"return a list of packets"
 		import json
 		import zlib
-		#what should happen here, is breaking the packet
-		#into multiple smaller onces so it fits in the
-		#mtu. Not implemented yet
-		p = zlib.compress( json.dumps( self._frames ) )
+
+		packets = []
+
+		#so, frames are pretty small, and on many
+		#networks we can fit multiple frames per packet
+		frames_so_far = 0
+		while( frames_so_far != len( self._frames ) ):
+			#However, we also need to split packets along frame boundaries
+			#this scope emits one packet with one or more frames per execution
+			frames_in_packet = len( self._frames ) - frames_so_far
+			while( True ):
+				p = zlib.compress( json.dumps( self._frames[frames_so_far:frames_so_far+frames_in_packet] ) )
+				if( frames_in_packet == 1 ):
+					#if only one frame is left then just send it.
+					#however, this also handles a frame > packet, which
+					#is just going to fragment :(
+					break
+				elif( len( p ) <= mtu ):
+					#found the right number of frames
+					#to pack into this packet
+					break
+				else:
+					#the packed data is too large, try again with
+					#fewer frames in this packet
+					frames_in_packet = frames_in_packet - 1
+
+			frames_so_far = frames_so_far + frames_in_packet
+			packets.append( p )
 		self._frames[:] = []
-		packets=[p]
 		return packets
 
 	def unpack( self, blob ):
