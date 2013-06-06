@@ -15,10 +15,10 @@ def process_incoming_packets( sock ):
 		sock.settimeout(timeout)
 		try:
 			blob1, addr = sock.recvfrom(2048)
+			print "received ", len( blob1 ), " byte message"
 			frame = dbframe.framer()
 			frames = frame.unpack( blob1 )
 			for f in frames:
-				print "received ", len( blob1 ), " byte message"
 				handle_frame( f )
 		except socket.timeout:
 			break;
