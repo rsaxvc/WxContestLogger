@@ -4,19 +4,19 @@
 #snagged from the WxPython Tutorial
 
 import wx
-
-demo_callsigns=("KD0LIX","KC5YTI","KD0JWD","KD0ABC")
+from db_manager import db_manager
 
 class Example(wx.Frame):
   
 	def __init__(self, parent, title):
 		super(Example, self).__init__(parent, title=title, 
 			size=(790, 350))
-		self.filter = ""
+		self.db = db_manager()
+		self.filter = self.db.filter()
 		self.InitUI()
 		self.Centre()
-		self.Show()		
-		
+		self.Show()
+
 	def InitUI(self):
 		panel = wx.Panel(self)
 
@@ -69,14 +69,12 @@ class Example(wx.Frame):
 	def DisplayView(self):
 		self.lc.DeleteAllItems()
 		j = 0
-		for i in demo_callsigns:
-			if( self.filter == "" or i.upper().find(self.filter.upper()) != -1 ):
-				 self.lc.InsertStringItem( j, i )
-				 pass
+		for i in self.db.search( self.filter ):
+			self.lc.InsertStringItem( j, i.theircall )
 			j = j + 1
 
 	def OnSearchBoxUpdate(self,evnt):
-		self.filter = self.tc.GetValue()
+		self.filter.contains = self.tc.GetValue()
 		self.DisplayView()
 
 	def OnCloseButtonClicked(self,evnt):
