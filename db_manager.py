@@ -20,9 +20,44 @@ class db_manager:
 		mycall=""
 		theircall=""
 
+	def _find_client_uuid( self, uuid ):
+		c = self.conn.cursor()
+		c.execute( "SELECT rowid FROM clients WHERE uuid = ?", [uuid] )
+		row = c.fetchone()
+		c.close()
+		if row == None:
+			return None
+		else:
+			return row[0]
+
+	def _insert_uuid_if_needed( self, uuid ):
+		"create a new client row if needed"
+		c = self.conn.cursor()
+		if self._find_client_uuid( uuid ) == None:
+			c.execute( "INSERT INTO clients(uuid,seq,name) VALUES(?,?,?)", [uuid,0,"unnamed"] )
+		c.close()
+		self.conn.commit()
+
+	def insert( self, uuid, mycall, theircall ):
+		"temporary method for testing - this should be reimplemented with change frames"
+		self._insert_uuid_if_needed( uuid )
+		client_uuid = self._find_client_uuid( uuid )
+		c = self.conn.cursor()
+		c.execute( "SELECT MAX( client_rec ) FROM contacts WHERE client_uuid == ?", [ client_uuid ] )
+		row = c.fetchone()
+		if row == None:
+			client_rec = 0
+		elif row[0] == None:
+			client_rec = 0
+		else:
+			client_rec = row[0] + 1
+
+		c.execute( "INSERT INTO contacts VALUES(?,?,?,?)", ( client_uuid, client_rec, mycall, theircall ) )
+		c.close()
+		self.conn.commit()
+
 	def search( self, f ):
 		c = self.conn.cursor()
-		print f.contains
 		c.execute("SELECT mycall,theircall FROM contacts WHERE theircall LIKE '%' || ? || '%' ", [ f.contains ] )
 		while( True ):
 			row = c.fetchone()
