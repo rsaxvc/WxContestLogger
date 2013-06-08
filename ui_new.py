@@ -77,7 +77,6 @@ class Example(wx.Frame):
 
 	def OnLogButtonClicked(self,evnt):
 		self.db.insert( self.uuid, self.tc1.GetValue(), self.tc2.GetValue() )
-		self.tc1.ChangeValue( "" )
 		self.tc2.ChangeValue( "" )
 		pass
 
