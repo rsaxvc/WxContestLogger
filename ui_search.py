@@ -48,8 +48,7 @@ class Example(wx.Frame):
 		self.lc = wx.ListCtrl(panel, style=wx.BORDER_SUNKEN)
 		self.lc.InsertColumn(0,"Callsign")
 		hbox3.Add(self.lc, proportion=1, flag=wx.EXPAND)
-		vbox.Add(hbox3, proportion=1, flag=wx.LEFT|wx.RIGHT|wx.EXPAND, 
-			border=10)
+		vbox.Add(hbox3, proportion=1, flag=wx.LEFT|wx.RIGHT|wx.EXPAND, border=10)
 
 		vbox.Add((-1, 25))
 
@@ -63,6 +62,11 @@ class Example(wx.Frame):
 		vbox.Add(hbox5, flag=wx.ALIGN_RIGHT|wx.RIGHT, border=10)
 
 		panel.SetSizer(vbox)
+
+		TIMER_ID = 10000
+		self.timer = wx.Timer(panel, TIMER_ID)
+		self.timer.Start(10000)
+		wx.EVT_TIMER(panel, TIMER_ID, self.OnTimer)  # call the on_timer function
 
 		self.DisplayView()
 
@@ -78,7 +82,12 @@ class Example(wx.Frame):
 		self.DisplayView()
 
 	def OnCloseButtonClicked(self,evnt):
+		self.timer.Stop()
 		self.Destroy()
+
+	def OnTimer(self,event):
+		self.DisplayView()
+		pass
 
 if __name__ == '__main__':
 	app = wx.App()
