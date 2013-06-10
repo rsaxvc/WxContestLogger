@@ -2,6 +2,7 @@ import sqlite3
 import paths
 
 class db_manager:
+	"handles database i/o, one layer up from python/sqlite3"
 	def __init__( self ):
 		self.conn = sqlite3.connect(paths.dbdir+'contacts.db')
 
