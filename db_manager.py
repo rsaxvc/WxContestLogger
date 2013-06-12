@@ -21,32 +21,26 @@ class db_manager:
 		mycall=""
 		theircall=""
 
-	def _find_client_uuid( self, uuid ):
-		c = self.conn.cursor()
+	def _find_client_uuid( self, c, uuid ):
 		c.execute( "SELECT rowid FROM clients WHERE uuid = ?", [uuid] )
 		row = c.fetchone()
-		c.close()
 		if row == None:
 			return None
 		else:
 			return row[0]
 
-	def _insert_uuid_if_needed( self, uuid ):
+	def _insert_uuid_if_needed( self, c, uuid ):
 		"create a new client row if needed"
-		c = self.conn.cursor()
-		uuid_idx = self._find_client_uuid( uuid )
+		uuid_idx = self._find_client_uuid( c, uuid )
 		if uuid_idx == None:
 			c.execute( "INSERT INTO clients(uuid,seq,name) VALUES(?,?,?)", [uuid,0,"unnamed"] )
-			uuid_idx = self._find_client_uuid( uuid )
-
-		c.close()
-		self.conn.commit()
+			uuid_idx = self._find_client_uuid( c, uuid )
 		return uuid_idx
 
 	def insert( self, uuid, mycall, theircall ):
 		"temporary method for testing - this should be reimplemented with change frames"
 		c = self.conn.cursor()
-		uuid_idx = self._insert_uuid_if_needed( uuid )
+		uuid_idx = self._insert_uuid_if_needed( c, uuid )
 		c.execute( "SELECT MAX( client_rec ) FROM contacts WHERE client_uuid == ?", [ uuid_idx ] )
 		row = c.fetchone()
 		if row == None:
