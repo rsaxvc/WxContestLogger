@@ -18,13 +18,13 @@ class framer:
 		"convert class to packet"
 		d={}
 		d['type']=self.typeNetHello
-		d['cid']=uuid
+		d['uuid']=uuid
 		self._frames.append( d )
 
 	def frame_upsert( self, uuid, sequence_number, affected_record, datetime, mycall, theircall ):
 		d={}
 		d['type'] = self.typeDbUpsert
-		d['cid']  = uuid
+		d['uuid']  = uuid
 		d['seq']  = sequence_number
 		d['rec']  = affected_record
 		d['dt']   = datetime
@@ -35,7 +35,7 @@ class framer:
 	def frame_delete( self, uuid, sequence_number, affected_record ):
 		d={}
 		d['type'] = self.typeDbDelete
-		d['cid']  = uuid
+		d['uuid']  = uuid
 		d['seq']  = sequence_number
 		d['rec']  = affected_record
 		self._frames.append( d )
