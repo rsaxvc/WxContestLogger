@@ -37,6 +37,30 @@ class db_manager:
 			uuid_idx = self._find_client_uuid( c, uuid )
 		return uuid_idx
 
+	def insert_frames( self, frames ):
+		"record frames into the database, but don't process it yet"
+		c = self.conn.cursor()
+
+		for frame in frames:
+			try:
+				uuid = frame['uuid']
+			except KeyError:
+				print "no uuid"
+				continue
+
+			try:
+				seq = frame['seq']
+			except KeyError:
+				print "no seq"
+				continue
+
+			uuid_idx = self._insert_uuid_if_needed( c, uuid )
+			import json
+			c.execute( "INSERT INTO differences(client_uuid,client_seq,json) VALUES(?,?,?)", [uuid_idx, seq, json.dumps( frame ) ] )
+
+		c.close()
+		self.conn.commit()
+
 	def insert( self, uuid, mycall, theircall ):
 		"temporary method for testing - this should be reimplemented with change frames"
 		c = self.conn.cursor()
