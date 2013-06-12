@@ -34,16 +34,19 @@ class db_manager:
 	def _insert_uuid_if_needed( self, uuid ):
 		"create a new client row if needed"
 		c = self.conn.cursor()
-		if self._find_client_uuid( uuid ) == None:
+		uuid_idx = self._find_client_uuid( uuid )
+		if uuid_idx == None:
 			c.execute( "INSERT INTO clients(uuid,seq,name) VALUES(?,?,?)", [uuid,0,"unnamed"] )
+			uuid_idx = self._find_client_uuid( uuid )
+
 		c.close()
 		self.conn.commit()
+		return uuid_idx
 
 	def insert( self, uuid, mycall, theircall ):
 		"temporary method for testing - this should be reimplemented with change frames"
-		self._insert_uuid_if_needed( uuid )
-		client_uuid = self._find_client_uuid( uuid )
 		c = self.conn.cursor()
+		client_uuid = self._insert_uuid_if_needed( uuid )
 		c.execute( "SELECT MAX( client_rec ) FROM contacts WHERE client_uuid == ?", [ client_uuid ] )
 		row = c.fetchone()
 		if row == None:
