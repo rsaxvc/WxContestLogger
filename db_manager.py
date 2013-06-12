@@ -46,8 +46,8 @@ class db_manager:
 	def insert( self, uuid, mycall, theircall ):
 		"temporary method for testing - this should be reimplemented with change frames"
 		c = self.conn.cursor()
-		client_uuid = self._insert_uuid_if_needed( uuid )
-		c.execute( "SELECT MAX( client_rec ) FROM contacts WHERE client_uuid == ?", [ client_uuid ] )
+		uuid_idx = self._insert_uuid_if_needed( uuid )
+		c.execute( "SELECT MAX( client_rec ) FROM contacts WHERE client_uuid == ?", [ uuid_idx ] )
 		row = c.fetchone()
 		if row == None:
 			client_rec = 0
@@ -56,7 +56,7 @@ class db_manager:
 		else:
 			client_rec = row[0] + 1
 
-		c.execute( "INSERT INTO contacts VALUES(?,?,?,?)", ( client_uuid, client_rec, mycall, theircall ) )
+		c.execute( "INSERT INTO contacts VALUES(?,?,?,?)", ( uuid_idx, client_rec, mycall, theircall ) )
 		c.close()
 		self.conn.commit()
 
