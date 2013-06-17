@@ -14,6 +14,9 @@ class framer:
 
 	_frames=[]
 
+	def frame_raw( self, frame ):
+		self._frames.append( frame )
+
 	def frame_hello( self, uuid ):
 		"convert class to packet"
 		d={}
@@ -41,7 +44,7 @@ class framer:
 		self._frames.append( d )
 
 	def pack( self, mtu ):
-		"return a list of packets"
+		"return a list of packets and clean the frame list"
 		import json
 		import zlib
 
@@ -74,6 +77,10 @@ class framer:
 			packets.append( p )
 		self._frames[:] = []
 		return packets
+
+	def pop_tail( self ):
+		"return newest frame and remove from the frame list"
+		return self._frames.pop()
 
 	def unpack( self, blob ):
 		"convert packet to class"
