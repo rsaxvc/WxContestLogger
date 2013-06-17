@@ -95,7 +95,7 @@ class db_manager:
 		seq = self._get_client_seq( c, uuid ) + 1
 		f.frame_upsert( uuid, seq, client_rec, datetime, mycall, theircall )
 		self._insert_frames( c, [ f.pop_tail() ] )
-		self. _set_client_seq( c, uuid, seq )
+		self._set_client_seq( c, uuid, seq )
 		c.close()
 		self.conn.commit()
 
@@ -111,3 +111,40 @@ class db_manager:
 			result.theircall = row[1]
 			yield result
 
+	def _process_frame( self, c, f ):
+		from dbframe import framer
+		uuid = f['uuid']
+		uuid_idx = self._insert_uuid_if_needed( c, uuid )
+		if( f['type'] == framer.typeDbUpsert ):
+			c.execute( "INSERT OR REPLACE INTO contacts VALUES( ?, ?, ?, ? )", [ uuid_idx, f['rec'], f['mycall'], f['theircall'] ] )
+		elif( f['type'] == framer.typeDbDelete ):
+			c.execute( "DELETE FROM contacts WHERE client_uuid = ? AND client_rec = ?", [ uuid_idx, f['rec'] ] )
+		else:
+			print "unknown packet type:",f['type']
+		self._set_client_seq( c, uuid, f['seq'] )
+		pass
+
+	def process_new_frames( self ):
+		c = self.conn.cursor()
+		done = False
+		while( done == 0 ):
+			done = True
+
+			c.execute( "SELECT rowid,seq FROM clients" )
+			client_list = c.fetchall()
+			for client in client_list:
+				client_idx = client[0]
+				next_seq = client[1] + 1
+				c.execute( "SELECT json FROM differences WHERE client_uuid = ? AND client_seq = ?", [ client_idx, next_seq ] )
+				row = c.fetchone()
+				if row == None:
+					continue
+				elif row[0] == None:
+					continue
+				json_text = row[0]
+				import json
+				self._process_frame( c, json.loads( json_text ) )
+				done = False
+
+		c.close()
+		self.conn.commit()
