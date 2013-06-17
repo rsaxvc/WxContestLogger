@@ -6,6 +6,7 @@
 import wx
 from db_manager import db_manager
 from settings_manager import settings_manager
+from dbframe import framer
 
 class Example(wx.Frame):
   
@@ -76,7 +77,7 @@ class Example(wx.Frame):
 		self.Destroy()
 
 	def OnLogButtonClicked(self,evnt):
-		self.db.insert( self.uuid, self.tc1.GetValue(), self.tc2.GetValue() )
+		self.db.insert_local_contact( self.uuid, "somedate.sometime", self.tc1.GetValue(), self.tc2.GetValue() )
 		self.tc2.ChangeValue( "" )
 		pass
 

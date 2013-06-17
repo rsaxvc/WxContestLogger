@@ -37,10 +37,7 @@ class db_manager:
 			uuid_idx = self._find_client_uuid( c, uuid )
 		return uuid_idx
 
-	def insert_frames( self, frames ):
-		"record frames into the database, but don't process it yet"
-		c = self.conn.cursor()
-
+	def _insert_frames( self, c, frames ):
 		for frame in frames:
 			try:
 				uuid = frame['uuid']
@@ -58,11 +55,30 @@ class db_manager:
 			import json
 			c.execute( "INSERT INTO differences(client_uuid,client_seq,json) VALUES(?,?,?)", [uuid_idx, seq, json.dumps( frame ) ] )
 
+	def insert_frames( self, frames ):
+		"record frames into the database, but don't process it yet"
+		c = self.conn.cursor()
+		self._insert_frames( c, frames )
 		c.close()
 		self.conn.commit()
 
-	def insert( self, uuid, mycall, theircall ):
-		"temporary method for testing - this should be reimplemented with change frames"
+	def _get_client_seq( self, c, uuid ):
+		"get the latest sequence number for a client. Returns 0 if no client"
+		c.execute( "SELECT MAX( seq ) FROM clients WHERE uuid = ?", [ uuid ] )
+		row = c.fetchone()
+		if row == None:
+			return 0
+		elif row[0] == None:
+			return 0
+		else:
+			return row[0]
+
+	def _set_client_seq( self, c, uuid, seq ):
+		c.execute( "UPDATE clients SET seq = ? WHERE uuid = ?", [ seq, uuid ] )
+		
+	def insert_local_contact( self, uuid, datetime, mycall, theircall ):
+		from dbframe import framer
+		"store a new contact and its insert frame"
 		c = self.conn.cursor()
 		uuid_idx = self._insert_uuid_if_needed( c, uuid )
 		c.execute( "SELECT MAX( client_rec ) FROM contacts WHERE client_uuid == ?", [ uuid_idx ] )
@@ -75,6 +91,11 @@ class db_manager:
 			client_rec = row[0] + 1
 
 		c.execute( "INSERT INTO contacts VALUES(?,?,?,?)", ( uuid_idx, client_rec, mycall, theircall ) )
+		f = framer()
+		seq = self._get_client_seq( c, uuid ) + 1
+		f.frame_upsert( uuid, seq, client_rec, datetime, mycall, theircall )
+		self._insert_frames( c, [ f.pop_tail() ] )
+		self. _set_client_seq( c, uuid, seq )
 		c.close()
 		self.conn.commit()
 
