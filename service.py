@@ -4,6 +4,7 @@ import pickle
 import uuid
 
 import dbframe
+from db_manager import db_manager
 import contactdb
 from settings_manager import settings_manager
 
@@ -25,7 +26,8 @@ def process_incoming_packets( sock ):
 		timeout = stop_time - time.time()
 
 def process_database_changes():
-	pass
+	db = db_manager()
+	db.process_new_frames()
 
 def request_missing_changes():
 	pass
@@ -58,10 +60,14 @@ def handle_frame_hello(frame):
 	print "hello"
 
 def handle_frame_upsert(frame):
-    print "upsert"
+	print "upsert"
+	db = db_manager()
+	db.insert_frames( [frame] )
 
 def handle_frame_delete(frame):
-    print "delete"
+	print "delete"
+	db = db_manager()
+	db.insert_frames( [frame] )
 
 def handle_frame_req_client_list(frame):
 	print "req_client_list"
