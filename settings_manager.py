@@ -14,7 +14,7 @@ class settings_manager:
 		except IOError:
 			pass
 		if( _self.settings.get( "uuid" ) == "" ):
-			_self.settings.put( "uuid", uuid4() )
+			_self.settings.put( "uuid", str(uuid4()) )
 			_self.settings.save( _self.configpath )
 
 	def save( _self ):
