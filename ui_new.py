@@ -121,10 +121,11 @@ class Example(wx.Frame):
 		self.Destroy()
 
 	def OnLogButtonClicked(self,evnt):
+		band=""
 		for i in range( 0, len( self.bands ) ):
 			if( self.bandswitches[i].GetValue() ):
-				print self.bands[i]
-		self.db.insert_local_contact( self.uuid, "somedate.sometime", self.tc1.GetValue(), self.tc2.GetValue() )
+				band = self.bands[i]
+		self.db.insert_local_contact( self.uuid, "somedate.sometime", self.tc1.GetValue(), self.tc2.GetValue(), band )
 		self.tc2.ChangeValue( "" )
 		pass
 

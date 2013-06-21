@@ -24,7 +24,7 @@ class framer:
 		d['uuid']=uuid
 		self._frames.append( d )
 
-	def frame_upsert( self, uuid, sequence_number, affected_record, datetime, mycall, theircall ):
+	def frame_upsert( self, uuid, sequence_number, affected_record, datetime, mycall, theircall, band ):
 		d={}
 		d['type'] = self.typeDbUpsert
 		d['uuid']  = uuid
@@ -33,6 +33,7 @@ class framer:
 		d['dt']   = datetime
 		d['mycall']= mycall
 		d['theircall']= theircall
+		d['band']=band
 		self._frames.append( d )
 
 	def frame_delete( self, uuid, sequence_number, affected_record ):

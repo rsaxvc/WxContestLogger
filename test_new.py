@@ -8,4 +8,4 @@ from dbframe import framer
 db = db_manager()
 s = settings_manager()
 uuid = s.get( "uuid" )
-db.insert_local_contact( uuid, "somedate.sometime", "KD0LIX", "KC5YTI" )
+db.insert_local_contact( uuid, "somedate.sometime", "KD0LIX", "KC5YTI", "80m" )
