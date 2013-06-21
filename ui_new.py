@@ -62,7 +62,7 @@ class Example(wx.Frame):
 			rb.SetFont(font)
 			if( band == last_band ):
 				rb.SetValue( True )
-			hbox3.Add(rb, flag=wx.RIGHT, border=8)
+			hbox3.Add(rb, flag=wx.RIGHT, border=8, proportion=1)
 			self.bandswitches.append( rb )
 			style = wx.RB_SINGLE
 		vbox.Add(hbox3, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
@@ -81,7 +81,6 @@ class Example(wx.Frame):
 			self.modeswitches.append( rb )
 			style = wx.RB_SINGLE
 		vbox.Add(hbox4, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
-
 
 		vbox.Add((-1, 10))
 
