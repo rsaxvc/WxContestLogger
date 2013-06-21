@@ -39,7 +39,7 @@ def send_periodic_packets():
 	uuid = s.get( "uuid" )
 
 	messages = dbframe.framer()
-	messages.frame_upsert( uuid, id, 3, "Wednesday", "KD0LIX", "KD0IXY", "80m" )
+	messages.frame_upsert( uuid, id, 3, "Wednesday", "KD0LIX", "KD0IXY", "80m", "testmode" )
 	id = id + 1
 	messages.frame_delete( uuid, id, 3 )
 	id = id + 1

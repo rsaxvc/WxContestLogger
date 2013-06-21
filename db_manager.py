@@ -13,7 +13,7 @@ class db_manager:
 		#as the target of foreign key constraints
 		c.execute( "CREATE TABLE IF NOT EXISTS clients( rowid INTEGER PRIMARY KEY, uuid CHAR(36) UNIQUE, seq INTEGER, name TEXT )" )
 		c.execute( "CREATE TABLE IF NOT EXISTS differences( client_uuid INTEGER NOT NULL, client_seq INTEGER NOT NULL, json TEXT, FOREIGN KEY( client_uuid ) REFERENCES clients( rowid ), PRIMARY KEY( client_uuid, client_seq )  )" )
-		c.execute( "CREATE TABLE IF NOT EXISTS contacts( client_uuid INTEGER NOT NULL, client_rec INTEGER NOT NULL, mycall TEXT NOT NULL, theircall TEXT NOT NULL, band TEXT, datetime8601 TEXT, foreign key( client_uuid ) REFERENCES clients( rowid ), PRIMARY KEY( client_uuid, client_rec ) )" )
+		c.execute( "CREATE TABLE IF NOT EXISTS contacts( client_uuid INTEGER NOT NULL, client_rec INTEGER NOT NULL, mycall TEXT NOT NULL, theircall TEXT NOT NULL, band TEXT, datetime8601 TEXT, mode TEXT, foreign key( client_uuid ) REFERENCES clients( rowid ), PRIMARY KEY( client_uuid, client_rec ) )" )
 	class filter:
 		contains=""
 
@@ -79,7 +79,7 @@ class db_manager:
 	def _set_client_seq( self, c, uuid, seq ):
 		c.execute( "UPDATE clients SET seq = ? WHERE uuid = ?", [ seq, uuid ] )
 		
-	def insert_local_contact( self, uuid, datetime, mycall, theircall, band ):
+	def insert_local_contact( self, uuid, datetime, mycall, theircall, band, mode ):
 		from dbframe import framer
 		"store a new contact and its insert frame"
 		c = self.conn.cursor()
@@ -93,10 +93,10 @@ class db_manager:
 		else:
 			client_rec = row[0] + 1
 
-		c.execute( "INSERT INTO contacts VALUES(?,?,?,?,?,?)", ( uuid_idx, client_rec, mycall, theircall,  band, datetime ) )
+		c.execute( "INSERT INTO contacts VALUES(?,?,?,?,?,?,?)", ( uuid_idx, client_rec, mycall, theircall,  band, datetime, mode ) )
 		f = framer()
 		seq = self._get_client_seq( c, uuid ) + 1
-		f.frame_upsert( uuid, seq, client_rec, datetime, mycall, theircall, band )
+		f.frame_upsert( uuid, seq, client_rec, datetime, mycall, theircall, band, mode )
 		self._insert_frames( c, [ f.pop_tail() ] )
 		self._set_client_seq( c, uuid, seq )
 		c.close()
@@ -104,7 +104,7 @@ class db_manager:
 
 	def search( self, f ):
 		c = self.conn.cursor()
-		c.execute("SELECT mycall,theircall,band,datetime8601 FROM contacts WHERE theircall LIKE '%' || ? || '%' ", [ f.contains ] )
+		c.execute("SELECT mycall,theircall,band,datetime8601,mode FROM contacts WHERE theircall LIKE '%' || ? || '%' ", [ f.contains ] )
 		while( True ):
 			row = c.fetchone()
 			if row == None:
@@ -114,7 +114,7 @@ class db_manager:
 			result.theircall = row[1]
 			result.band=row[2]
 			result.datetime=row[3]
-			result.mode="dummy"
+			result.mode=row[4]
 			yield result
 
 	def _process_frame( self, c, f ):
@@ -122,7 +122,7 @@ class db_manager:
 		uuid = f['uuid']
 		uuid_idx = self._insert_uuid_if_needed( c, uuid )
 		if( f['type'] == framer.typeDbUpsert ):
-			c.execute( "INSERT OR REPLACE INTO contacts VALUES( ?, ?, ?, ?, ?, ? )", [ uuid_idx, f['rec'], f['mycall'], f['theircall'], f['band'], f['datetime'] ] )
+			c.execute( "INSERT OR REPLACE INTO contacts VALUES(?,?,?,?,?,?,?)", [ uuid_idx, f['rec'], f['mycall'], f['theircall'], f['band'], f['dt'], f['mode'] ] )
 		elif( f['type'] == framer.typeDbDelete ):
 			c.execute( "DELETE FROM contacts WHERE client_uuid = ? AND client_rec = ?", [ uuid_idx, f['rec'] ] )
 		else:
