@@ -13,13 +13,16 @@ class db_manager:
 		#as the target of foreign key constraints
 		c.execute( "CREATE TABLE IF NOT EXISTS clients( rowid INTEGER PRIMARY KEY, uuid CHAR(36) UNIQUE, seq INTEGER, name TEXT )" )
 		c.execute( "CREATE TABLE IF NOT EXISTS differences( client_uuid INTEGER NOT NULL, client_seq INTEGER NOT NULL, json TEXT, FOREIGN KEY( client_uuid ) REFERENCES clients( rowid ), PRIMARY KEY( client_uuid, client_seq )  )" )
-		c.execute( "CREATE TABLE IF NOT EXISTS contacts( client_uuid INTEGER NOT NULL, client_rec INTEGER NOT NULL, mycall TEXT NOT NULL, theircall TEXT NOT NULL, band TEXT, time8601 TEXT, foreign key( client_uuid ) REFERENCES clients( rowid ), PRIMARY KEY( client_uuid, client_rec ) )" )
+		c.execute( "CREATE TABLE IF NOT EXISTS contacts( client_uuid INTEGER NOT NULL, client_rec INTEGER NOT NULL, mycall TEXT NOT NULL, theircall TEXT NOT NULL, band TEXT, datetime8601 TEXT, foreign key( client_uuid ) REFERENCES clients( rowid ), PRIMARY KEY( client_uuid, client_rec ) )" )
 	class filter:
 		contains=""
 
 	class search_result:
 		mycall=""
 		theircall=""
+		band=""
+		datetime=""
+		mode=""
 
 	def _find_client_uuid( self, c, uuid ):
 		c.execute( "SELECT rowid FROM clients WHERE uuid = ?", [uuid] )
@@ -101,7 +104,7 @@ class db_manager:
 
 	def search( self, f ):
 		c = self.conn.cursor()
-		c.execute("SELECT mycall,theircall FROM contacts WHERE theircall LIKE '%' || ? || '%' ", [ f.contains ] )
+		c.execute("SELECT mycall,theircall,band,datetime8601 FROM contacts WHERE theircall LIKE '%' || ? || '%' ", [ f.contains ] )
 		while( True ):
 			row = c.fetchone()
 			if row == None:
@@ -109,6 +112,9 @@ class db_manager:
 			result = self.search_result()
 			result.mycall = row[0]
 			result.theircall = row[1]
+			result.band=row[2]
+			result.datetime=row[3]
+			result.mode="dummy"
 			yield result
 
 	def _process_frame( self, c, f ):
