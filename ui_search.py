@@ -74,7 +74,7 @@ class Example(wx.Frame):
 		self.lc.DeleteAllItems()
 		j = 0
 		for i in self.db.search( self.filter ):
-			self.lc.InsertStringItem( j, i.theircall )
+			self.lc.InsertStringItem( j, i.band + ", " + i.mode + ", " + i.mycall + "->" + i.theircall )
 			j = j + 1
 
 	def OnSearchBoxUpdate(self,evnt):
