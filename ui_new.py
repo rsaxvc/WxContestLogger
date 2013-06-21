@@ -13,14 +13,16 @@ class Example(wx.Frame):
 			size=(790, 200))
 		self.db = db_manager()
 
-		s = settings_manager()
-		self.uuid = s.get( "uuid" )
+		settings = settings_manager()
+		self.uuid = settings.get( "uuid" )
 
 		self.InitUI()
 		self.Centre()
 		self.Show()
 
 	def InitUI(self):
+		settings = settings_manager()
+
 		panel = wx.Panel(self)
 
 		font = wx.SystemSettings_GetFont(wx.SYS_SYSTEM_FONT)
@@ -53,10 +55,13 @@ class Example(wx.Frame):
 		hbox3 = wx.BoxSizer(wx.HORIZONTAL)
 		self.bands = [ 'Satellite', '1.25m', '2m', '6m', '10m', '20m', '40m', '80m', '160m' ]
 		self.bandswitches = []
+		last_band = settings.get( "logger.band" )
 		style = wx.RB_GROUP
 		for band in self.bands:
 			rb = wx.RadioButton(panel, label=band, style=style )
 			rb.SetFont(font)
+			if( band == last_band ):
+				rb.SetValue( True )
 			hbox3.Add(rb, flag=wx.RIGHT, border=8)
 			self.bandswitches.append( rb )
 			style = wx.RB_SINGLE
@@ -65,10 +70,13 @@ class Example(wx.Frame):
 		hbox4 = wx.BoxSizer(wx.HORIZONTAL)
 		self.modes = [ 'cw', 'digital', 'phone' ]
 		self.modeswitches = []
+		last_mode = settings.get( "logger.mode" )
 		style = wx.RB_GROUP
 		for mode in self.modes:
 			rb = wx.RadioButton(panel, label=mode, style=style)
 			rb.SetFont(font)
+			if( mode == last_mode ):
+				rb.SetValue( True )
 			hbox4.Add(rb, flag=wx.RIGHT, border=8)
 			self.modeswitches.append( rb )
 			style = wx.RB_SINGLE
@@ -99,6 +107,17 @@ class Example(wx.Frame):
 		self.DisplayView()
 
 	def OnCloseButtonClicked(self,evnt):
+		settings = settings_manager()
+
+		for i in range( 0, len( self.bands ) ):
+			if( self.bandswitches[i].GetValue() ):
+				settings.put( "logger.band", self.bands[i] )
+
+		for i in range( 0, len( self.modes ) ):
+			if( self.modeswitches[i].GetValue() ):
+				settings.put( "logger.mode", self.modes[i] )
+
+		settings.save()
 		self.Destroy()
 
 	def OnLogButtonClicked(self,evnt):
