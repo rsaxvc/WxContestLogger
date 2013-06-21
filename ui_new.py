@@ -1,8 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-#snagged from the WxPython Tutorial
-
 import wx
 from db_manager import db_manager
 from settings_manager import settings_manager
@@ -52,6 +50,33 @@ class Example(wx.Frame):
 
 		vbox.Add((-1, 10))
 
+		hbox3 = wx.BoxSizer(wx.HORIZONTAL)
+		self.bands = [ 'Satellite', '1.25m', '2m', '6m', '10m', '20m', '40m', '80m', '160m' ]
+		self.bandswitches = []
+		style = wx.RB_GROUP
+		for band in self.bands:
+			rb = wx.RadioButton(panel, label=band, style=style )
+			rb.SetFont(font)
+			hbox3.Add(rb, flag=wx.RIGHT, border=8)
+			self.bandswitches.append( rb )
+			style = wx.RB_SINGLE
+		vbox.Add(hbox3, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
+
+		hbox4 = wx.BoxSizer(wx.HORIZONTAL)
+		self.modes = [ 'cw', 'digital', 'phone' ]
+		self.modeswitches = []
+		style = wx.RB_GROUP
+		for mode in self.modes:
+			rb = wx.RadioButton(panel, label=mode, style=style)
+			rb.SetFont(font)
+			hbox4.Add(rb, flag=wx.RIGHT, border=8)
+			self.modeswitches.append( rb )
+			style = wx.RB_SINGLE
+		vbox.Add(hbox4, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
+
+
+		vbox.Add((-1, 10))
+
 		hbox5 = wx.BoxSizer(wx.HORIZONTAL)
 		btn1 = wx.Button(panel, label='Create Log', size=(200, 30))
 		btn1.Bind(wx.EVT_BUTTON, self.OnLogButtonClicked)
@@ -77,6 +102,9 @@ class Example(wx.Frame):
 		self.Destroy()
 
 	def OnLogButtonClicked(self,evnt):
+		for i in range( 0, len( self.bands ) ):
+			if( self.bandswitches[i].GetValue() ):
+				print self.bands[i]
 		self.db.insert_local_contact( self.uuid, "somedate.sometime", self.tc1.GetValue(), self.tc2.GetValue() )
 		self.tc2.ChangeValue( "" )
 		pass
