@@ -2,6 +2,7 @@ import time
 import socket
 import pickle
 import uuid
+import random
 
 import dbframe
 from db_manager import db_manager
@@ -9,7 +10,7 @@ from settings_manager import settings_manager
 
 def process_incoming_packets( sock ):
 	"receive and handle new packets, for up to 1 second"
-	timeout = 1.0
+	timeout = 1.0 + random.uniform(0,1)
 	stop_time = time.time() + timeout
 	while( timeout > 0.0 ):
 		sock.settimeout(timeout)
@@ -38,6 +39,7 @@ def send_periodic_packets():
 	uuid = s.get( "uuid" )
 
 	messages = dbframe.framer()
+	messages.frame_hello( uuid )
 	messages.frame_upsert( uuid, id, 3, "Wednesday", "KD0LIX", "KD0IXY", "80m", "testmode" )
 	id = id + 1
 	messages.frame_delete( uuid, id, 3 )
