@@ -102,6 +102,17 @@ class db_manager:
 		c.close()
 		self.conn.commit()
 
+	def get_seq_from_uuid( self, uuid ):
+		c = self.conn.cursor()
+		c.execute("SELECT seq FROM clients WHERE uuid = ?", [ uuid ] )
+		row = c.fetchone()
+		if row == None:
+			result = 0
+		else:
+			result = row[0]
+		c.close()
+		return result		
+
 	def search( self, f ):
 		c = self.conn.cursor()
 		c.execute("SELECT mycall,theircall,band,datetime8601,mode FROM contacts WHERE theircall LIKE '%' || ? || '%' ", [ f.contains ] )

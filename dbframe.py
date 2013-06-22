@@ -17,11 +17,12 @@ class framer:
 	def frame_raw( self, frame ):
 		self._frames.append( frame )
 
-	def frame_hello( self, uuid ):
+	def frame_hello( self, uuid, seq ):
 		"convert class to packet"
 		d={}
 		d['type']=self.typeNetHello
 		d['uuid']=uuid
+		d['seq']=seq
 		self._frames.append( d )
 
 	def frame_upsert( self, uuid, sequence_number, affected_record, datetime, mycall, theircall, band, mode ):
