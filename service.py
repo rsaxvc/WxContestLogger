@@ -33,17 +33,14 @@ def request_missing_changes():
 	pass
 
 def send_periodic_packets():
-	global id
 
 	s = settings_manager()
 	uuid = s.get( "uuid" )
 
+	db = db_manager()
+
 	messages = dbframe.framer()
-	messages.frame_hello( uuid )
-	messages.frame_upsert( uuid, id, 3, "Wednesday", "KD0LIX", "KD0IXY", "80m", "testmode" )
-	id = id + 1
-	messages.frame_delete( uuid, id, 3 )
-	id = id + 1
+	messages.frame_hello( uuid, db.get_seq_from_uuid( uuid ) )
 
 	packets = messages.pack( 1200 )
 	for p in packets:
@@ -58,7 +55,7 @@ def send_goodbye():
 	pass
 
 def handle_frame_hello(frame):
-	print "hello"
+	print "hello from ",frame['uuid']," seq:",frame['seq']
 
 def handle_frame_upsert(frame):
 	print "upsert"
