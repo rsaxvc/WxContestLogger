@@ -5,7 +5,6 @@ import uuid
 
 import dbframe
 from db_manager import db_manager
-import contactdb
 from settings_manager import settings_manager
 
 def process_incoming_packets( sock ):
