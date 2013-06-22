@@ -53,13 +53,34 @@ class Example(wx.Frame):
 		vbox.Add((-1, 25))
 
 		hbox5 = wx.BoxSizer(wx.HORIZONTAL)
-		btn1 = wx.Button(panel, label='Ok', size=(70, 30))
-		hbox5.Add(btn1)
-		btn2 = wx.Button(panel, label='Close', size=(70, 30))
-		btn2.Bind(wx.EVT_BUTTON, self.OnCloseButtonClicked)
+		self.bands = [ 'Satellite', '1.25m', '2m', '6m', '10m', '20m', '40m', '80m', '160m' ]
+		self.bandswitches = []
+		for band in self.bands:
+			cb = wx.CheckBox(panel, label=band )
+			cb.SetFont(font)
+			cb.SetValue( True )
+			hbox5.Add(cb, flag=wx.RIGHT, border=8, proportion=1)
+			self.bandswitches.append( cb )
+		vbox.Add(hbox5, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
 
-		hbox5.Add(btn2, flag=wx.LEFT|wx.BOTTOM, border=5)
-		vbox.Add(hbox5, flag=wx.ALIGN_RIGHT|wx.RIGHT, border=10)
+		vbox.Add((-1, 10))
+
+		hbox6 = wx.BoxSizer(wx.HORIZONTAL)
+		self.modes = [ 'cw', 'digital', 'phone' ]
+		self.modeswitches = []
+		for mode in self.modes:
+			cb = wx.CheckBox(panel, label=mode)
+			cb.SetFont(font)
+			cb.SetValue( True )
+			hbox6.Add(cb, flag=wx.RIGHT, border=8)
+			self.modeswitches.append( cb )
+		close_btn = wx.Button(panel, label='Close', size=(70, 30))
+		close_btn.Bind(wx.EVT_BUTTON, self.OnCloseButtonClicked)
+		hbox6.Add(close_btn, flag=wx.LEFT|wx.BOTTOM, border=5)
+
+#		vbox.Add(hbox15, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
+#		vbox.Add((-1, 10))
+		vbox.Add(hbox6, flag=wx.ALIGN_RIGHT|wx.RIGHT, border=10)
 
 		panel.SetSizer(vbox)
 
@@ -93,3 +114,4 @@ if __name__ == '__main__':
 	app = wx.App()
 	Example(None, title='WxContextLogger - Search Contacts')
 	app.MainLoop()
+
