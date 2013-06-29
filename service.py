@@ -10,10 +10,13 @@ from settings_manager import settings_manager
 
 class service:
 	def __init__( _self ):
+		_self.db = db_manager()
+
 		settings = settings_manager()
 
 		_self.my_uuid = settings.get( "uuid" )
-		_self.db = db_manager()
+		_self.my_last_seq = _self.db.get_seq_from_uuid( _self.my_uuid )
+
 		_self.handlers={
 			dbframe.framer.typeDbUpsert:_self.handle_frame_upsert,
 			dbframe.framer.typeDbDelete:_self.handle_frame_delete,
@@ -63,7 +66,12 @@ class service:
 		pass
 
 	def queue_periodic_packets( _self ):
-		_self.framer.frame_hello( _self.my_uuid, _self.db.get_seq_from_uuid( _self.my_uuid ) )
+		crnt_seq = _self.db.get_seq_from_uuid( _self.my_uuid )
+		_self.framer.frame_hello( _self.my_uuid, crnt_seq )
+		if( crnt_seq != _self.my_last_seq ):
+			for packet in _self.db.get_packets( _self.my_uuid, _self.my_last_seq, crnt_seq ):
+				_self.framer.frame_raw( packet )
+			_self.my_last_seq = crnt_seq;
 
 	def send_queued_packets( _self ):
 		packets = _self.framer.pack( 1200 )
