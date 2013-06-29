@@ -33,7 +33,6 @@ def request_missing_changes():
 	pass
 
 def send_periodic_packets():
-
 	s = settings_manager()
 	uuid = s.get( "uuid" )
 
@@ -45,10 +44,6 @@ def send_periodic_packets():
 	packets = messages.pack( 1200 )
 	for p in packets:
 		sock.sendto( p, (UDP_IP, UDP_PORT) )
-
-def send_hello():
-	#broadcast a hello packet
-	pass
 
 def send_goodbye():
 	#broadcast a goodbye packet
@@ -93,7 +88,6 @@ def handle_frame( frame ):
 
 myid = uuid.uuid4()
 
-UDP_IP = "192.168.3.255"
 UDP_IP = "255.255.255.255"
 UDP_PORT = 32250
 
@@ -106,7 +100,6 @@ if hasattr(socket,'SO_BROADCAST'):
 
 id = 0
 
-send_hello()
 while True:
 	process_incoming_packets(sock)
 	process_database_changes()
