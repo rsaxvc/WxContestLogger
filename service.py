@@ -16,7 +16,7 @@ def process_incoming_packets( sock ):
 		sock.settimeout(timeout)
 		try:
 			blob1, addr = sock.recvfrom(2048)
-			print "received ", len( blob1 ), " byte message"
+			print "received ", len( blob1 ), " byte message from ", addr
 			frame = dbframe.framer()
 			frames = frame.unpack( blob1 )
 			for f in frames:
@@ -93,13 +93,16 @@ def handle_frame( frame ):
 
 myid = uuid.uuid4()
 
-UDP_IP = "127.0.0.1"
+UDP_IP = "192.168.3.255"
+UDP_IP = "255.255.255.255"
 UDP_PORT = 32250
 
 sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
 
 sock.bind((UDP_IP, UDP_PORT))
+if hasattr(socket,'SO_BROADCAST'):
+	sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
 id = 0
 
