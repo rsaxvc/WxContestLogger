@@ -9,8 +9,8 @@ from db_manager import db_manager
 from settings_manager import settings_manager
 
 def process_incoming_packets( sock ):
-	"receive and handle new packets, for up to 1 second"
-	timeout = 1.0 + random.uniform(0,1)
+	"receive and handle new packets, for 8 to 10 second"
+	timeout = 8.0 + random.uniform(0,10)
 	stop_time = time.time() + timeout
 	while( timeout > 0.0 ):
 		sock.settimeout(timeout)
