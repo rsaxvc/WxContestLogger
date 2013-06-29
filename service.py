@@ -103,10 +103,11 @@ class service:
 		print "req_client_updates"
 
 	def handle_frame( _self, frame ):
-		try:
-			_self.handlers[frame['type']](frame)
-		except KeyError:
-			print "unknown frame type:",frame.type
+		if( frame['uuid'] != _self.my_uuid ):
+			try:
+				_self.handlers[frame['type']](frame)
+			except KeyError:
+				print "unknown frame type:",frame.type
 
 
 
