@@ -25,6 +25,13 @@ class framer:
 		d['seq']=seq
 		self._frames.append( d )
 
+	def frame_goodbye( self, uuid ):
+		"convert class to packet"
+		d={}
+		d['type']=self.typeNetHello
+		d['uuid']=uuid
+		self._frames.append( d )
+
 	def frame_upsert( self, uuid, sequence_number, affected_record, datetime, mycall, theircall, band, mode ):
 		d={}
 		d['type']     = self.typeDbUpsert
