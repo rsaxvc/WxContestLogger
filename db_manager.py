@@ -113,6 +113,19 @@ class db_manager:
 		c.close()
 		return result		
 
+	def get_packets( self, uuid, min_seq, max_seq ):
+		import json
+		c = self.conn.cursor()
+		client_uuid = self._insert_uuid_if_needed( c, uuid )
+		c.execute("SELECT json FROM differences WHERE client_uuid = ? AND client_seq BETWEEN ? AND ?", ( client_uuid, min_seq + 1, max_seq ) )
+		while( True ):
+			row = c.fetchone()
+			if row == None:
+				break
+			result = json.loads( row[0] )
+			yield result
+		c.close()
+
 	def search( self, f ):
 		c = self.conn.cursor()
 		c.execute("SELECT mycall,theircall,band,datetime8601,mode FROM contacts WHERE theircall LIKE '%' || ? || '%' ", [ f.contains ] )
