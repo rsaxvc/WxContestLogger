@@ -8,101 +8,106 @@ import dbframe
 from db_manager import db_manager
 from settings_manager import settings_manager
 
-def process_incoming_packets( sock ):
-	"receive and handle new packets, for 8 to 10 second"
-	timeout = 8.0 + random.uniform(0,10)
-	stop_time = time.time() + timeout
-	while( timeout > 0.0 ):
-		sock.settimeout(timeout)
+class service:
+	def __init__( _self ):
+		settings = settings_manager()
+
+		_self.my_uuid = settings.get( "uuid" )
+		_self.db = db_manager()
+		_self.handlers={
+			dbframe.framer.typeDbUpsert:_self.handle_frame_upsert,
+			dbframe.framer.typeDbDelete:_self.handle_frame_delete,
+			dbframe.framer.typeNetHello:_self.handle_frame_hello,
+			dbframe.framer.typeNetReqClientList:_self.handle_frame_req_client_list,
+			dbframe.framer.typeNetClientList:_self.handle_frame_client_list,
+			dbframe.framer.typeNetReqClientUpdates:_self.handle_frame_req_client_updates,
+			}
+
+		_self.framer = dbframe.framer()
+
+		#broadcast to everybody.
+		#Should be able to programatically
+		#compute local broadcast address
+		#but also seems that most routers drop these
+		#so this should work fine
+		_self.UDP_IP = "255.255.255.255"
+		_self.UDP_PORT = 32250
+
+		_self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		_self.sock.bind((_self.UDP_IP, _self.UDP_PORT))
+		if hasattr(socket,'SO_BROADCAST'):
+			#add broadcast abilities
+			_self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+
+	def process_incoming_packets( _self ):
+		"receive and handle new packets, for 8 to 10 second"
+		timeout = 8.0 + random.uniform(0,10)
+		stop_time = time.time() + timeout
+		while( timeout > 0.0 ):
+			_self.sock.settimeout(timeout)
+			try:
+				blob1, addr = _self.sock.recvfrom(2048)
+				print "received ", len( blob1 ), " byte message from ", addr
+				frame = dbframe.framer()
+				frames = frame.unpack( blob1 )
+				for f in frames:
+					_self.handle_frame( f )
+			except socket.timeout:
+				break;
+			timeout = stop_time - time.time()
+
+	def process_database_changes( _self ):
+		_self.db.process_new_frames()
+
+	def request_missing_changes( _self ):
+		pass
+
+	def queue_periodic_packets( _self ):
+		_self.framer.frame_hello( _self.my_uuid, _self.db.get_seq_from_uuid( _self.my_uuid ) )
+
+	def send_queued_packets( _self ):
+		packets = _self.framer.pack( 1200 )
+		for p in packets:
+			_self.sock.sendto( p, (_self.UDP_IP, _self.UDP_PORT) )
+
+	def queue_goodbye( _self ):
+		_self.framer.frame_goodbye( _self.my_uuid )
+
+	def handle_frame_hello( _self, frame):
+		print "hello from ",frame['uuid']," seq:",frame['seq']
+
+	def handle_frame_upsert( _self, frame):
+		print "upsert"
+		_self.db.insert_frames( [frame] )
+
+	def handle_frame_delete( _self, frame):
+		print "delete"
+		db = db_manager()
+		_self.db.insert_frames( [frame] )
+
+	def handle_frame_req_client_list( _self, frame):
+		print "req_client_list"
+
+	def handle_frame_client_list( _self, frame ):
+		print "client_list"
+
+	def handle_frame_req_client_updates( _self, frame ):
+		print "req_client_updates"
+
+	def handle_frame( _self, frame ):
 		try:
-			blob1, addr = sock.recvfrom(2048)
-			print "received ", len( blob1 ), " byte message from ", addr
-			frame = dbframe.framer()
-			frames = frame.unpack( blob1 )
-			for f in frames:
-				handle_frame( f )
-		except socket.timeout:
-			break;
-		timeout = stop_time - time.time()
-
-def process_database_changes():
-	db = db_manager()
-	db.process_new_frames()
-
-def request_missing_changes():
-	pass
-
-def send_periodic_packets():
-	s = settings_manager()
-	uuid = s.get( "uuid" )
-
-	db = db_manager()
-
-	messages = dbframe.framer()
-	messages.frame_hello( uuid, db.get_seq_from_uuid( uuid ) )
-
-	packets = messages.pack( 1200 )
-	for p in packets:
-		sock.sendto( p, (UDP_IP, UDP_PORT) )
-
-def send_goodbye():
-	#broadcast a goodbye packet
-	pass
-
-def handle_frame_hello(frame):
-	print "hello from ",frame['uuid']," seq:",frame['seq']
-
-def handle_frame_upsert(frame):
-	print "upsert"
-	db = db_manager()
-	db.insert_frames( [frame] )
-
-def handle_frame_delete(frame):
-	print "delete"
-	db = db_manager()
-	db.insert_frames( [frame] )
-
-def handle_frame_req_client_list(frame):
-	print "req_client_list"
-
-def handle_frame_client_list(frame):
-	print "client_list"
-
-def handle_frame_req_client_updates(frame):
-	print "req_client_updates"
-
-def handle_frame( frame ):
-	handlers={
-		dbframe.framer.typeDbUpsert:handle_frame_upsert,
-		dbframe.framer.typeDbDelete:handle_frame_delete,
-		dbframe.framer.typeNetHello:handle_frame_hello,
-		dbframe.framer.typeNetReqClientList:handle_frame_req_client_list,
-		dbframe.framer.typeNetClientList:handle_frame_client_list,
-		dbframe.framer.typeNetReqClientUpdates:handle_frame_req_client_updates,
-		}
-	try:
-		handlers[frame['type']](frame)
-	except KeyError:
-		print "unknown frame type:",frame.type
+			_self.handlers[frame['type']](frame)
+		except KeyError:
+			print "unknown frame type:",frame.type
 
 
-myid = uuid.uuid4()
 
-UDP_IP = "255.255.255.255"
-UDP_PORT = 32250
-
-sock = socket.socket(socket.AF_INET, # Internet
-                     socket.SOCK_DGRAM) # UDP
-
-sock.bind((UDP_IP, UDP_PORT))
-if hasattr(socket,'SO_BROADCAST'):
-	sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-
-id = 0
+s = service();
 
 while True:
-	process_incoming_packets(sock)
-	process_database_changes()
-	request_missing_changes()
-	send_periodic_packets()
+	s.queue_periodic_packets()
+	s.send_queued_packets()
+	s.process_incoming_packets()
+	s.process_database_changes()
+	s.request_missing_changes()
 send_goodbye()
