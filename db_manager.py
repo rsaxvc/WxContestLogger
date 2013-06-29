@@ -56,7 +56,7 @@ class db_manager:
 
 			uuid_idx = self._insert_uuid_if_needed( c, uuid )
 			import json
-			c.execute( "INSERT INTO differences(client_uuid,client_seq,json) VALUES(?,?,?)", [uuid_idx, seq, json.dumps( frame ) ] )
+			c.execute( "INSERT OR IGNORE INTO differences(client_uuid,client_seq,json) VALUES(?,?,?)", [uuid_idx, seq, json.dumps( frame ) ] )
 
 	def insert_frames( self, frames ):
 		"record frames into the database, but don't process it yet"
@@ -119,7 +119,7 @@ class db_manager:
 		while( True ):
 			row = c.fetchone()
 			if row == None:
-			    break
+				break
 			result = self.search_result()
 			result.mycall = row[0]
 			result.theircall = row[1]
