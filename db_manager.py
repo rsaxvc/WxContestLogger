@@ -132,6 +132,21 @@ class db_manager:
 			next_seq = row[0]
 		c.close()
 		return next_seq
+
+	def search_clients_with_missing_frames( self ):
+		c = self.conn.cursor()
+		c.execute( "SELECT uuid,seq FROM clients" )
+		client_list = c.fetchall()
+		result_list = []
+		for client in client_list:
+			uuid = client[0]
+			crnt_seq = client[1]
+			next_seq = next_difference_seq_from_uuid( uuid )
+			if( crnt_seq != next_seq ):
+				result_list.append(uuid)
+		c.close()
+		return result_list
+
 	def search( self, f ):
 		c = self.conn.cursor()
 		c.execute("SELECT mycall,theircall,band,datetime8601,mode FROM contacts WHERE theircall LIKE '%' || ? || '%' ", [ f.contains ] )
