@@ -60,6 +60,9 @@ class service:
 				break;
 			timeout = stop_time - time.time()
 
+		#restore socket back to blocking
+		_self.sock.settimeout(None)
+
 	def process_database_changes( _self ):
 		"""apply differences to contacts"""
 		_self.db.process_new_frames()
