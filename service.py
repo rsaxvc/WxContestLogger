@@ -10,6 +10,7 @@ from settings_manager import settings_manager
 
 class service:
 	def __init__( _self ):
+		"""hook up database, framer, and bind UDP"""
 		_self.db = db_manager()
 
 		settings = settings_manager()
@@ -43,7 +44,7 @@ class service:
 			_self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
 	def process_incoming_packets( _self ):
-		"receive and handle new packets, for 8 to 10 seconds"
+		"""receive and handle new packets, for 8 to 10 seconds"""
 		timeout = 8.0 + random.uniform(0,2)
 		stop_time = time.time() + timeout
 		while( timeout > 0.0 ):
@@ -60,40 +61,49 @@ class service:
 			timeout = stop_time - time.time()
 
 	def process_database_changes( _self ):
+		"""apply differences to contacts"""
 		_self.db.process_new_frames()
 
-	def request_missing_changes( _self ):
+	def queue_requests_for_missing_changes( _self ):
+		"""search database for holes in seq numbers, and queue requests for them"""
 		pass
 
 	def queue_periodic_packets( _self ):
+		"""queue timed packets"""
 		crnt_seq = _self.db.get_seq_from_uuid( _self.my_uuid )
+
+		#add a hello frame
 		_self.framer.frame_hello( _self.my_uuid, crnt_seq )
+
+		#add any new frames generated that haven't been sent at least once
 		if( crnt_seq != _self.my_last_seq ):
 			for packet in _self.db.get_packets( _self.my_uuid, _self.my_last_seq, crnt_seq ):
 				_self.framer.frame_raw( packet )
 			_self.my_last_seq = crnt_seq;
 
 	def send_queued_packets( _self ):
+		"""pops messages from queue and sends them over UDP"""
 		packets = _self.framer.pack( 1200 )
 		for p in packets:
 			_self.sock.sendto( p, (_self.UDP_IP, _self.UDP_PORT) )
 
 	def queue_goodbye( _self ):
+		"""queue a goodbye frame"""
 		_self.framer.frame_goodbye( _self.my_uuid )
 
-	def handle_frame_hello( _self, frame):
-		print "hello from ",frame['uuid']," seq:",frame['seq']
+	def handle_frame_hello( _self, frame ):
+		print "hello from ", frame['uuid'], " seq:", frame['seq']
 
-	def handle_frame_upsert( _self, frame):
+	def handle_frame_upsert( _self, frame ):
 		print "upsert"
 		_self.db.insert_frames( [frame] )
 
-	def handle_frame_delete( _self, frame):
+	def handle_frame_delete( _self, frame ):
 		print "delete"
 		db = db_manager()
 		_self.db.insert_frames( [frame] )
 
-	def handle_frame_req_client_list( _self, frame):
+	def handle_frame_req_client_list( _self, frame ):
 		print "req_client_list"
 
 	def handle_frame_client_list( _self, frame ):
@@ -118,5 +128,5 @@ while True:
 	s.send_queued_packets()
 	s.process_incoming_packets()
 	s.process_database_changes()
-	s.request_missing_changes()
+	s.queue_requests_for_missing_changes()
 send_goodbye()
