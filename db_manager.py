@@ -121,6 +121,17 @@ class db_manager:
 			yield result
 		c.close()
 
+	def next_difference_seq_from_uuid( self, uuid ):
+		c = self.conn.cursor()
+		client_uuid = _insert_uuid_if_needed( c, uuid )
+		cur_seq = self._get_client_seq( c, uuid )
+		next_seq = cur_seq
+		c.execute("SELECT MIN( client_seq ) FROM differences WHERE client_uuid = ? AND client_seq > ?", ( client_uuid, cur_seq ) )
+		row = c.fetchone()
+		if row != None:
+			next_seq = row[0]
+		c.close()
+		return next_seq
 	def search( self, f ):
 		c = self.conn.cursor()
 		c.execute("SELECT mycall,theircall,band,datetime8601,mode FROM contacts WHERE theircall LIKE '%' || ? || '%' ", [ f.contains ] )
