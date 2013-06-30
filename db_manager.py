@@ -156,25 +156,21 @@ class db_manager:
 
 	def process_new_frames( self ):
 		c = self.conn.cursor()
-		done = False
-		while( done == 0 ):
-			done = True
-
-			c.execute( "SELECT rowid,seq FROM clients" )
-			client_list = c.fetchall()
-			for client in client_list:
-				client_idx = client[0]
-				next_seq = client[1] + 1
+		c.execute( "SELECT rowid,seq FROM clients" )
+		client_list = c.fetchall()
+		for client in client_list:
+			client_idx = client[0]
+			next_seq = client[1] + 1
+			while(True):
 				c.execute( "SELECT json FROM differences WHERE client_uuid = ? AND client_seq = ?", [ client_idx, next_seq ] )
 				row = c.fetchone()
 				if row == None:
-					continue
+					break
 				elif row[0] == None:
-					continue
+					break
 				json_text = row[0]
 				import json
 				self._process_frame( c, json.loads( json_text ) )
-				done = False
 
 		c.close()
 		self.conn.commit()
