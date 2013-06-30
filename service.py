@@ -69,7 +69,11 @@ class service:
 
 	def queue_requests_for_missing_changes( _self ):
 		"""search database for holes in seq numbers, and queue requests for them"""
-		pass
+		clients = _self.db.search_clients_with_missing_frames()
+		for client in clients:
+			start = _self.db.get_seq_from_uuid( client )
+			end = _self.db.next_difference_seq_from_uuid( client )
+			_self.framer.frame_request_client_updates( client, start, end )
 
 	def queue_periodic_packets( _self ):
 		"""queue timed packets"""
