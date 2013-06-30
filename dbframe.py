@@ -14,6 +14,14 @@ class framer:
 
 	_frames=[]
 
+	def frame_request_client_updates( self, uuid, start, end ):
+		d={}
+		d['type']=self.typeReqClientUpdates
+		d['uuid']=str(uuid)
+		d['seq_start']=start
+		d['seq_end']=end
+		self._frames.append( d )
+
 	def frame_raw( self, frame ):
 		self._frames.append( frame )
 
