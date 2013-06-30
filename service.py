@@ -43,8 +43,8 @@ class service:
 			_self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
 	def process_incoming_packets( _self ):
-		"receive and handle new packets, for 8 to 10 second"
-		timeout = 8.0 + random.uniform(0,10)
+		"receive and handle new packets, for 8 to 10 seconds"
+		timeout = 8.0 + random.uniform(0,2)
 		stop_time = time.time() + timeout
 		while( timeout > 0.0 ):
 			_self.sock.settimeout(timeout)
