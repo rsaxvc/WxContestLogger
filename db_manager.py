@@ -67,7 +67,7 @@ class db_manager:
 
 	def _get_client_seq( self, c, uuid ):
 		"get the latest sequence number for a client. Returns 0 if no client"
-		c.execute( "SELECT MAX( seq ) FROM clients WHERE uuid = ?", [ uuid ] )
+		c.execute( "SELECT seq FROM clients WHERE uuid = ?", [ uuid ] )
 		row = c.fetchone()
 		if row == None:
 			return 0
@@ -104,12 +104,7 @@ class db_manager:
 
 	def get_seq_from_uuid( self, uuid ):
 		c = self.conn.cursor()
-		c.execute("SELECT seq FROM clients WHERE uuid = ?", [ uuid ] )
-		row = c.fetchone()
-		if row == None:
-			result = 0
-		else:
-			result = row[0]
+		result = self._get_client_seq( c, uuid )
 		c.close()
 		return result		
 
