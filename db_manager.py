@@ -123,7 +123,7 @@ class db_manager:
 
 	def next_difference_seq_from_uuid( self, uuid ):
 		c = self.conn.cursor()
-		client_uuid = _insert_uuid_if_needed( c, uuid )
+		client_uuid = self._insert_uuid_if_needed( c, uuid )
 		cur_seq = self._get_client_seq( c, uuid )
 		next_seq = cur_seq
 		c.execute("SELECT MIN( client_seq ) FROM differences WHERE client_uuid = ? AND client_seq > ?", ( client_uuid, cur_seq ) )
@@ -141,7 +141,7 @@ class db_manager:
 		for client in client_list:
 			uuid = client[0]
 			crnt_seq = client[1]
-			next_seq = next_difference_seq_from_uuid( uuid )
+			next_seq = self.next_difference_seq_from_uuid( uuid )
 			if( crnt_seq != next_seq ):
 				result_list.append(uuid)
 		c.close()
