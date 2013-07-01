@@ -16,7 +16,7 @@ class framer:
 
 	def frame_request_client_updates( self, uuid, start, end ):
 		d={}
-		d['type']=self.typeReqClientUpdates
+		d['type']=self.typeNetReqClientUpdates
 		d['uuid']=str(uuid)
 		d['seq_start']=start
 		d['seq_end']=end
