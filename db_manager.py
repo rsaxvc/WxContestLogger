@@ -65,7 +65,7 @@ class db_manager:
 		c.close()
 		self.conn.commit()
 
-	def _get_client_seq( self, c, uuid ):
+	def _get_current_client_seq( self, c, uuid ):
 		"get the latest sequence number for a client. Returns 0 if no client"
 		c.execute( "SELECT seq FROM clients WHERE uuid = ?", [ uuid ] )
 		row = c.fetchone()
@@ -76,7 +76,7 @@ class db_manager:
 		else:
 			return row[0]
 
-	def _set_client_seq( self, c, uuid, seq ):
+	def _set_current_client_seq( self, c, uuid, seq ):
 		c.execute( "UPDATE clients SET seq = ? WHERE uuid = ?", [ seq, uuid ] )
 		
 	def insert_local_contact( self, uuid, datetime, mycall, theircall, band, mode ):
@@ -95,16 +95,16 @@ class db_manager:
 
 		c.execute( "INSERT INTO contacts VALUES(?,?,?,?,?,?,?)", ( uuid_idx, client_rec, mycall, theircall,  band, datetime, mode ) )
 		f = framer()
-		seq = self._get_client_seq( c, uuid ) + 1
+		seq = self._get_current_client_seq( c, uuid ) + 1
 		f.frame_upsert( uuid, seq, client_rec, datetime, mycall, theircall, band, mode )
 		self._insert_frames( c, [ f.pop_tail() ] )
-		self._set_client_seq( c, uuid, seq )
+		self._set_current_client_seq( c, uuid, seq )
 		c.close()
 		self.conn.commit()
 
 	def get_seq_from_uuid( self, uuid ):
 		c = self.conn.cursor()
-		result = self._get_client_seq( c, uuid )
+		result = self._get_current_client_seq( c, uuid )
 		c.close()
 		return result		
 
@@ -124,7 +124,7 @@ class db_manager:
 	def next_difference_seq_from_uuid( self, uuid ):
 		c = self.conn.cursor()
 		client_uuid = self._insert_uuid_if_needed( c, uuid )
-		cur_seq = self._get_client_seq( c, uuid )
+		cur_seq = self._get_current_client_seq( c, uuid )
 		next_seq = cur_seq
 		c.execute("SELECT MIN( client_seq ) FROM differences WHERE client_uuid = ? AND client_seq > ?", ( client_uuid, cur_seq ) )
 		row = c.fetchone()
@@ -172,7 +172,7 @@ class db_manager:
 			c.execute( "DELETE FROM contacts WHERE client_uuid = ? AND client_rec = ?", [ uuid_idx, f['rec'] ] )
 		else:
 			print "unknown packet type:",f['type']
-		self._set_client_seq( c, uuid, f['seq'] )
+		self._set_current_client_seq( c, uuid, f['seq'] )
 		pass
 
 	def process_new_frames( self ):
