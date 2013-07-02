@@ -41,6 +41,7 @@ class db_manager:
 		return uuid_idx
 
 	def _insert_frames( self, c, frames ):
+		from dbframe import framer
 		for frame in frames:
 			try:
 				uuid = frame['uuid']
@@ -52,6 +53,12 @@ class db_manager:
 				seq = frame['seq']
 			except KeyError:
 				print "no seq"
+				continue
+
+			if frame['type'] < framer.typeDbFirst:
+				continue
+
+			if frame['type'] > framer.typeDbLast:
 				continue
 
 			uuid_idx = self._insert_uuid_if_needed( c, uuid )
