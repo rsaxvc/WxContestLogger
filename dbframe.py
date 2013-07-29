@@ -2,15 +2,19 @@ class framer:
 	"""This is a container for network frames"""
 
 	#commands that modify database state
+	typeDbFirst=0
 	typeDbUpsert=0#update or insert
 	typeDbDelete=1#delete by uuid+rowid
+	typeDbLast=1
 
 	#commands that affect network
+	typeNetFirst=256
 	typeNetHello=256            #initiates communication, usually broadcast on startup+periodically
 	typeNetGoodbye=257          #user closes program
 	typeNetReqClientList=258    #asks to enumerate clients
 	typeNetClientList=259		#list of clients w/uuid and current sequence number, response to 258
 	typeNetReqClientUpdates=260 #asks to list all upserts+deletes for specific UUID and list of seq ranges
+	typeNetLast=260
 
 	_frames=[]
 
