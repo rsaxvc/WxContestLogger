@@ -2,6 +2,7 @@ Logging:
 Need to log dates
 
 Searching:
+Only rescan DB when notified of changes instead of polling
 Need to filter by dates
 Need to filter by band
 
