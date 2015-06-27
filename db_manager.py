@@ -156,7 +156,7 @@ class db_manager:
 
 	def search( self, f ):
 		c = self.conn.cursor()
-		c.execute("SELECT mycall,theircall,band,datetime8601,mode FROM contacts WHERE theircall LIKE '%' || ? || '%' ", [ f.contains ] )
+		c.execute("SELECT mycall,theircall,band,datetime8601,mode FROM contacts WHERE theircall LIKE '%' || ? || '%' order by datetime8601 DESC ", [ f.contains ] )
 		while( True ):
 			row = c.fetchone()
 			if row == None:
