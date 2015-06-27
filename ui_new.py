@@ -88,7 +88,7 @@ class Example(wx.Frame):
 		hbox5 = wx.BoxSizer(wx.HORIZONTAL)
 		btn1 = wx.Button(panel, label='Create Log', size=(200, 30))
 		btn1.Bind(wx.EVT_BUTTON, self.OnLogButtonClicked)
-		hbox5.Add(btn1)
+		hbox5.Add(btn1, flag=wx.BOTTOM, border=5)
 
 		btn2 = wx.Button(panel, label='Close', size=(70, 30))
 		btn2.Bind(wx.EVT_BUTTON, self.OnCloseButtonClicked)
