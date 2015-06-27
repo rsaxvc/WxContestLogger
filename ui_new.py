@@ -101,7 +101,7 @@ class Example(wx.Frame):
 		vbox.Add((-1, 10))
 
 		hbox = wx.BoxSizer(wx.HORIZONTAL)
-		btnClear = wx.Button(panel, label='Clear', size=(200, 30))
+		btnClear = wx.Button(panel, label='Clear', size=(70, 30))
 		btnClear.Bind(wx.EVT_BUTTON, self.OnClearButtonClicked)
 		hbox.Add(btnClear, flag=wx.BOTTOM, border=5)
 
