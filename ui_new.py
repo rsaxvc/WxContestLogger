@@ -120,6 +120,8 @@ class Example(wx.Frame):
 		self.Destroy()
 
 	def OnLogButtonClicked(self,evnt):
+		if( self.tc2.GetValue() == "" ):
+			return
 		band=""
 		for i in range( 0, len( self.bands ) ):
 			if( self.bandswitches[i].GetValue() ):
