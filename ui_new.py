@@ -36,6 +36,7 @@ class Example(wx.Frame):
 		hbox1.Add(st1, flag=wx.RIGHT, border=8)
 		self.tc1 = wx.TextCtrl(panel)
 		self.tc1.Bind(wx.EVT_TEXT, self.OnSearchBoxUpdate)
+		self.tc1.SetValue( settings.get( "logger.mycall" ) )
 		hbox1.Add(self.tc1, proportion=1)
 		vbox.Add(hbox1, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
 
@@ -116,6 +117,7 @@ class Example(wx.Frame):
 			if( self.modeswitches[i].GetValue() ):
 				settings.put( "logger.mode", self.modes[i] )
 
+		settings.put( "logger.mycall", self.tc1.GetValue() )
 		settings.save()
 		self.Destroy()
 
