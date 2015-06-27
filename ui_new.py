@@ -30,30 +30,30 @@ class Example(wx.Frame):
 
 		vbox = wx.BoxSizer(wx.VERTICAL)
 
-		hbox1 = wx.BoxSizer(wx.HORIZONTAL)
+		hbox = wx.BoxSizer(wx.HORIZONTAL)
 		st1 = wx.StaticText(panel, label='MyCall')
 		st1.SetFont(font)
-		hbox1.Add(st1, flag=wx.RIGHT, border=8)
+		hbox.Add(st1, flag=wx.RIGHT, border=8)
 		self.tcMyCall = wx.TextCtrl(panel)
 		self.tcMyCall.Bind(wx.EVT_TEXT, self.OnSearchBoxUpdate)
 		self.tcMyCall.SetValue( settings.get( "logger.mycall" ) )
-		hbox1.Add(self.tcMyCall, proportion=1)
-		vbox.Add(hbox1, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
+		hbox.Add(self.tcMyCall, proportion=1)
+		vbox.Add(hbox, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
 
 		vbox.Add((-1, 10))
 
-		hbox2 = wx.BoxSizer(wx.HORIZONTAL)
+		hbox = wx.BoxSizer(wx.HORIZONTAL)
 		st1 = wx.StaticText(panel, label='TheirCall')
 		st1.SetFont(font)
-		hbox2.Add(st1, flag=wx.RIGHT, border=8)
+		hbox.Add(st1, flag=wx.RIGHT, border=8)
 		self.tcTheirCall = wx.TextCtrl(panel)
 		self.tcTheirCall.Bind(wx.EVT_TEXT, self.OnSearchBoxUpdate)
-		hbox2.Add(self.tcTheirCall, proportion=1)
-		vbox.Add(hbox2, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
+		hbox.Add(self.tcTheirCall, proportion=1)
+		vbox.Add(hbox, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
 
 		vbox.Add((-1, 10))
 
-		hbox3 = wx.BoxSizer(wx.HORIZONTAL)
+		hbox = wx.BoxSizer(wx.HORIZONTAL)
 		self.bands = [ 'Satellite', '1.25m', '2m', '6m', '10m', '20m', '40m', '80m', '160m' ]
 		self.bandswitches = []
 		last_band = settings.get( "logger.band" )
@@ -63,12 +63,12 @@ class Example(wx.Frame):
 			rb.SetFont(font)
 			if( band == last_band ):
 				rb.SetValue( True )
-			hbox3.Add(rb, flag=wx.RIGHT, border=8, proportion=1)
+			hbox.Add(rb, flag=wx.RIGHT, border=8, proportion=1)
 			self.bandswitches.append( rb )
 			style = 0
-		vbox.Add(hbox3, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
+		vbox.Add(hbox, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
 
-		hbox4 = wx.BoxSizer(wx.HORIZONTAL)
+		hbox = wx.BoxSizer(wx.HORIZONTAL)
 		self.modes = [ 'cw', 'digital', 'phone' ]
 		self.modeswitches = []
 		last_mode = settings.get( "logger.mode" )
@@ -78,27 +78,27 @@ class Example(wx.Frame):
 			rb.SetFont(font)
 			if( mode == last_mode ):
 				rb.SetValue( True )
-			hbox4.Add(rb, flag=wx.RIGHT, border=8)
+			hbox.Add(rb, flag=wx.RIGHT, border=8)
 			self.modeswitches.append( rb )
 			style = 0
-		vbox.Add(hbox4, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
+		vbox.Add(hbox, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
 
 		vbox.Add((-1, 10))
 
-		hbox5 = wx.BoxSizer(wx.HORIZONTAL)
+		hbox = wx.BoxSizer(wx.HORIZONTAL)
 		btnClear = wx.Button(panel, label='Clear', size=(200, 30))
 		btnClear.Bind(wx.EVT_BUTTON, self.OnClearButtonClicked)
-		hbox5.Add(btnClear, flag=wx.BOTTOM, border=5)
+		hbox.Add(btnClear, flag=wx.BOTTOM, border=5)
 
 		btnCreate = wx.Button(panel, label='Create Log', size=(200, 30))
 		btnCreate.Bind(wx.EVT_BUTTON, self.OnLogButtonClicked)
-		hbox5.Add(btnCreate, flag=wx.BOTTOM, border=5)
+		hbox.Add(btnCreate, flag=wx.BOTTOM, border=5)
 
 		btnClose = wx.Button(panel, label='Close', size=(70, 30))
 		btnClose.Bind(wx.EVT_BUTTON, self.OnCloseButtonClicked)
-		hbox5.Add(btnClose, flag=wx.BOTTOM, border=5)
+		hbox.Add(btnClose, flag=wx.BOTTOM, border=5)
 
-		vbox.Add(hbox5, flag=wx.ALIGN_RIGHT|wx.RIGHT, border=10)
+		vbox.Add(hbox, flag=wx.ALIGN_RIGHT|wx.RIGHT, border=10)
 
 		panel.SetSizer(vbox)
 
