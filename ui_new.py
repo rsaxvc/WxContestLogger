@@ -35,7 +35,6 @@ class Example(wx.Frame):
 		st1.SetFont(font)
 		hbox.Add(st1, flag=wx.RIGHT, border=8)
 		self.tcMyCall = wx.TextCtrl(panel)
-		self.tcMyCall.Bind(wx.EVT_TEXT, self.OnSearchBoxUpdate)
 		self.tcMyCall.SetValue( settings.get( "logger.mycall" ) )
 		hbox.Add(self.tcMyCall, proportion=1)
 		vbox.Add(hbox, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
@@ -49,7 +48,6 @@ class Example(wx.Frame):
 			hbox.Add(st1, flag=wx.RIGHT, border=8)
 
 			self.tcTheirCall = wx.TextCtrl(panel)
-			self.tcTheirCall.Bind(wx.EVT_TEXT, self.OnSearchBoxUpdate)
 			hbox.Add(self.tcTheirCall, proportion=1)
 
 			st1 = wx.StaticText(panel, label='Class')
@@ -57,7 +55,6 @@ class Example(wx.Frame):
 			hbox.Add(st1, flag=wx.RIGHT, border=8)
 
 			self.tcTheirClass = wx.TextCtrl(panel)
-			self.tcTheirClass.Bind(wx.EVT_TEXT, self.OnSearchBoxUpdate)
 			hbox.Add(self.tcTheirClass, proportion=1)
 
 			st1 = wx.StaticText(panel, label='Section')
@@ -65,7 +62,6 @@ class Example(wx.Frame):
 			hbox.Add(st1, flag=wx.RIGHT, border=8)
 
 			self.tcTheirSection = wx.TextCtrl(panel)
-			self.tcTheirSection.Bind(wx.EVT_TEXT, self.OnSearchBoxUpdate)
 			hbox.Add(self.tcTheirSection, proportion=1)
 
 		vbox.Add(hbox, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
@@ -120,14 +116,6 @@ class Example(wx.Frame):
 		vbox.Add(hbox, flag=wx.ALIGN_RIGHT|wx.RIGHT, border=10)
 
 		panel.SetSizer(vbox)
-
-		self.DisplayView()
-
-	def DisplayView(self):
-		pass
-
-	def OnSearchBoxUpdate(self,evnt):
-		self.DisplayView()
 
 	def OnCloseButtonClicked(self,evnt):
 		settings = settings_manager()
