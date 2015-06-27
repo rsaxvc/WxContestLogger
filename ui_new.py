@@ -128,7 +128,7 @@ class Example(wx.Frame):
 		mode=""
 		for i in range( 0, len( self.modes ) ):
 			if( self.modeswitches[i].GetValue() ):
-				band = self.modes[i]
+				mode = self.modes[i]
 
 		from localtimeutil import local8601
 		self.db.insert_local_contact( self.uuid, local8601(), self.tc1.GetValue(), self.tc2.GetValue(), band, mode )
