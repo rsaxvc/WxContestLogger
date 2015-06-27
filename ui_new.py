@@ -64,7 +64,7 @@ class Example(wx.Frame):
 				rb.SetValue( True )
 			hbox3.Add(rb, flag=wx.RIGHT, border=8, proportion=1)
 			self.bandswitches.append( rb )
-			style = wx.RB_SINGLE
+			style = 0
 		vbox.Add(hbox3, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
 
 		hbox4 = wx.BoxSizer(wx.HORIZONTAL)
@@ -79,7 +79,7 @@ class Example(wx.Frame):
 				rb.SetValue( True )
 			hbox4.Add(rb, flag=wx.RIGHT, border=8)
 			self.modeswitches.append( rb )
-			style = wx.RB_SINGLE
+			style = 0
 		vbox.Add(hbox4, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
 
 		vbox.Add((-1, 10))
