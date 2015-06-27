@@ -45,8 +45,12 @@ class Example(wx.Frame):
 		vbox.Add((-1, 10))
 
 		hbox3 = wx.BoxSizer(wx.HORIZONTAL)
-		self.lc = wx.ListCtrl(panel, style=wx.BORDER_SUNKEN)
-		self.lc.InsertColumn(0,"Callsign")
+		self.lc = wx.ListCtrl(panel, style=wx.BORDER_SUNKEN | wx.LC_REPORT)
+		self.lc.InsertColumn(0,"MyCall")
+		self.lc.InsertColumn(1,"TheirCall")
+		self.lc.InsertColumn(2,"Band")
+		self.lc.InsertColumn(3,"Mode")
+		self.lc.InsertColumn(4,"DateTime")
 		hbox3.Add(self.lc, proportion=1, flag=wx.EXPAND)
 		vbox.Add(hbox3, proportion=1, flag=wx.LEFT|wx.RIGHT|wx.EXPAND, border=10)
 
@@ -84,19 +88,17 @@ class Example(wx.Frame):
 
 		panel.SetSizer(vbox)
 
-		TIMER_ID = 10000
+		TIMER_ID = 1000
 		self.timer = wx.Timer(panel, TIMER_ID)
-		self.timer.Start(10000)
+		self.timer.Start(1000)
 		wx.EVT_TIMER(panel, TIMER_ID, self.OnTimer)  # call the on_timer function
 
 		self.DisplayView()
 
 	def DisplayView(self):
 		self.lc.DeleteAllItems()
-		j = 0
 		for i in self.db.search( self.filter ):
-			self.lc.InsertStringItem( j, i.band + ", " + i.mode + ", " + i.mycall + "->" + i.theircall )
-			j = j + 1
+			self.lc.Append([i.mycall, i.theircall, i.band, i.mode, i.datetime])
 
 	def OnSearchBoxUpdate(self,evnt):
 		self.filter.contains = self.tc.GetValue()

@@ -10,7 +10,7 @@ class Example(wx.Frame):
   
 	def __init__(self, parent, title):
 		super(Example, self).__init__(parent, title=title, 
-			size=(790, 200))
+			size=(790, 300))
 		self.db = db_manager()
 
 		settings = settings_manager()
