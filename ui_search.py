@@ -48,9 +48,11 @@ class Example(wx.Frame):
 		self.lc = wx.ListCtrl(panel, style=wx.BORDER_SUNKEN | wx.LC_REPORT)
 		self.lc.InsertColumn(0,"MyCall")
 		self.lc.InsertColumn(1,"TheirCall")
-		self.lc.InsertColumn(2,"Band")
-		self.lc.InsertColumn(3,"Mode")
+		self.lc.InsertColumn(2,"Class")
+		self.lc.InsertColumn(3,"Section")
 		self.lc.InsertColumn(4,"DateTime")
+		self.lc.InsertColumn(5,"Band")
+		self.lc.InsertColumn(6,"Mode")
 		hbox3.Add(self.lc, proportion=1, flag=wx.EXPAND)
 		vbox.Add(hbox3, proportion=1, flag=wx.LEFT|wx.RIGHT|wx.EXPAND, border=10)
 
@@ -98,7 +100,7 @@ class Example(wx.Frame):
 	def DisplayView(self):
 		self.lc.DeleteAllItems()
 		for i in self.db.search( self.filter ):
-			self.lc.Append([i.mycall, i.theircall, i.band, i.mode, i.datetime])
+			self.lc.Append([i.mycall, i.theircall, i.class_, i.section, i.datetime, i.band, i.mode])
 
 	def OnSearchBoxUpdate(self,evnt):
 		self.filter.contains = self.tc.GetValue()

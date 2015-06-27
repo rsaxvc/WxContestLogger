@@ -43,12 +43,31 @@ class Example(wx.Frame):
 		vbox.Add((-1, 10))
 
 		hbox = wx.BoxSizer(wx.HORIZONTAL)
-		st1 = wx.StaticText(panel, label='TheirCall')
-		st1.SetFont(font)
-		hbox.Add(st1, flag=wx.RIGHT, border=8)
-		self.tcTheirCall = wx.TextCtrl(panel)
-		self.tcTheirCall.Bind(wx.EVT_TEXT, self.OnSearchBoxUpdate)
-		hbox.Add(self.tcTheirCall, proportion=1)
+		if(True):
+			st1 = wx.StaticText(panel, label='TheirCall')
+			st1.SetFont(font)
+			hbox.Add(st1, flag=wx.RIGHT, border=8)
+
+			self.tcTheirCall = wx.TextCtrl(panel)
+			self.tcTheirCall.Bind(wx.EVT_TEXT, self.OnSearchBoxUpdate)
+			hbox.Add(self.tcTheirCall, proportion=1)
+
+			st1 = wx.StaticText(panel, label='Class')
+			st1.SetFont(font)
+			hbox.Add(st1, flag=wx.RIGHT, border=8)
+
+			self.tcTheirClass = wx.TextCtrl(panel)
+			self.tcTheirClass.Bind(wx.EVT_TEXT, self.OnSearchBoxUpdate)
+			hbox.Add(self.tcTheirClass, proportion=1)
+
+			st1 = wx.StaticText(panel, label='Section')
+			st1.SetFont(font)
+			hbox.Add(st1, flag=wx.RIGHT, border=8)
+
+			self.tcTheirSection = wx.TextCtrl(panel)
+			self.tcTheirSection.Bind(wx.EVT_TEXT, self.OnSearchBoxUpdate)
+			hbox.Add(self.tcTheirSection, proportion=1)
+
 		vbox.Add(hbox, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
 
 		vbox.Add((-1, 10))
@@ -127,6 +146,8 @@ class Example(wx.Frame):
 
 	def OnClearButtonClicked(self,evnt):
 		self.tcTheirCall.ChangeValue( "" )
+		self.tcTheirClass.ChangeValue( "" )
+		self.tcTheirSection.ChangeValue( "" )
 
 	def OnLogButtonClicked(self,evnt):
 		if( self.tcTheirCall.GetValue() == "" ):
@@ -142,8 +163,8 @@ class Example(wx.Frame):
 				mode = self.modes[i]
 
 		from localtimeutil import local8601
-		self.db.insert_local_contact( self.uuid, local8601(), self.tcMyCall.GetValue(), self.tcTheirCall.GetValue(), band, mode )
-		self.tcTheirCall.ChangeValue( "" )
+		self.db.insert_local_contact( self.uuid, local8601(), self.tcMyCall.GetValue(), self.tcTheirCall.GetValue(), band, mode, self.tcTheirClass.GetValue(), self.tcTheirSection.GetValue() )
+		self.OnClearButtonClicked(self)
 
 if __name__ == '__main__':
 	app = wx.App()

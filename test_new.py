@@ -9,4 +9,4 @@ from localtimeutil import local8601
 db = db_manager()
 s = settings_manager()
 uuid = s.get( "uuid" )
-db.insert_local_contact( uuid, local8601(), "KD0LIX", "KC5YTI", "80m", "testmode" )
+db.insert_local_contact( uuid, local8601(), "KD0LIX", "KC5YTI", "80m", "testmode", "1A", "KS" )
