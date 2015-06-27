@@ -34,10 +34,10 @@ class Example(wx.Frame):
 		st1 = wx.StaticText(panel, label='MyCall')
 		st1.SetFont(font)
 		hbox1.Add(st1, flag=wx.RIGHT, border=8)
-		self.tc1 = wx.TextCtrl(panel)
-		self.tc1.Bind(wx.EVT_TEXT, self.OnSearchBoxUpdate)
-		self.tc1.SetValue( settings.get( "logger.mycall" ) )
-		hbox1.Add(self.tc1, proportion=1)
+		self.tcMyCall = wx.TextCtrl(panel)
+		self.tcMyCall.Bind(wx.EVT_TEXT, self.OnSearchBoxUpdate)
+		self.tcMyCall.SetValue( settings.get( "logger.mycall" ) )
+		hbox1.Add(self.tcMyCall, proportion=1)
 		vbox.Add(hbox1, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
 
 		vbox.Add((-1, 10))
@@ -46,9 +46,9 @@ class Example(wx.Frame):
 		st1 = wx.StaticText(panel, label='TheirCall')
 		st1.SetFont(font)
 		hbox2.Add(st1, flag=wx.RIGHT, border=8)
-		self.tc2 = wx.TextCtrl(panel)
-		self.tc2.Bind(wx.EVT_TEXT, self.OnSearchBoxUpdate)
-		hbox2.Add(self.tc2, proportion=1)
+		self.tcTheirCall = wx.TextCtrl(panel)
+		self.tcTheirCall.Bind(wx.EVT_TEXT, self.OnSearchBoxUpdate)
+		hbox2.Add(self.tcTheirCall, proportion=1)
 		vbox.Add(hbox2, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
 
 		vbox.Add((-1, 10))
@@ -86,13 +86,17 @@ class Example(wx.Frame):
 		vbox.Add((-1, 10))
 
 		hbox5 = wx.BoxSizer(wx.HORIZONTAL)
-		btn1 = wx.Button(panel, label='Create Log', size=(200, 30))
-		btn1.Bind(wx.EVT_BUTTON, self.OnLogButtonClicked)
-		hbox5.Add(btn1, flag=wx.BOTTOM, border=5)
+		btnClear = wx.Button(panel, label='Clear', size=(200, 30))
+		btnClear.Bind(wx.EVT_BUTTON, self.OnClearButtonClicked)
+		hbox5.Add(btnClear, flag=wx.BOTTOM, border=5)
 
-		btn2 = wx.Button(panel, label='Close', size=(70, 30))
-		btn2.Bind(wx.EVT_BUTTON, self.OnCloseButtonClicked)
-		hbox5.Add(btn2, flag=wx.LEFT|wx.BOTTOM, border=5)
+		btnCreate = wx.Button(panel, label='Create Log', size=(200, 30))
+		btnCreate.Bind(wx.EVT_BUTTON, self.OnLogButtonClicked)
+		hbox5.Add(btnCreate, flag=wx.BOTTOM, border=5)
+
+		btnClose = wx.Button(panel, label='Close', size=(70, 30))
+		btnClose.Bind(wx.EVT_BUTTON, self.OnCloseButtonClicked)
+		hbox5.Add(btnClose, flag=wx.BOTTOM, border=5)
 
 		vbox.Add(hbox5, flag=wx.ALIGN_RIGHT|wx.RIGHT, border=10)
 
@@ -117,12 +121,15 @@ class Example(wx.Frame):
 			if( self.modeswitches[i].GetValue() ):
 				settings.put( "logger.mode", self.modes[i] )
 
-		settings.put( "logger.mycall", self.tc1.GetValue() )
+		settings.put( "logger.mycall", self.tcMyCall.GetValue() )
 		settings.save()
 		self.Destroy()
 
+	def OnClearButtonClicked(self,evnt):
+		self.tcTheirCall.ChangeValue( "" )
+
 	def OnLogButtonClicked(self,evnt):
-		if( self.tc2.GetValue() == "" ):
+		if( self.tcTheirCall.GetValue() == "" ):
 			return
 		band=""
 		for i in range( 0, len( self.bands ) ):
@@ -135,9 +142,8 @@ class Example(wx.Frame):
 				mode = self.modes[i]
 
 		from localtimeutil import local8601
-		self.db.insert_local_contact( self.uuid, local8601(), self.tc1.GetValue(), self.tc2.GetValue(), band, mode )
-		self.tc2.ChangeValue( "" )
-		pass
+		self.db.insert_local_contact( self.uuid, local8601(), self.tcMyCall.GetValue(), self.tcTheirCall.GetValue(), band, mode )
+		self.tcTheirCall.ChangeValue( "" )
 
 if __name__ == '__main__':
 	app = wx.App()
