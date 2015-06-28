@@ -34,24 +34,24 @@ class Example(wx.Frame):
 		if(True):
 			st1 = wx.StaticText(panel, label='TheirCall')
 			st1.SetFont(font)
-			hbox.Add(st1, flag=wx.RIGHT, border=8)
+			hbox.Add(st1, flag=wx.TOP, border=8)
 
 			self.tcTheirCall = wx.TextCtrl(panel)
-			hbox.Add(self.tcTheirCall, proportion=1)
+			hbox.Add(self.tcTheirCall, flag=wx.EXPAND, proportion=1)
 
 			st1 = wx.StaticText(panel, label='Class')
 			st1.SetFont(font)
-			hbox.Add(st1, flag=wx.RIGHT, border=8)
+			hbox.Add(st1, flag=wx.LEFT|wx.TOP, border=6)
 
 			self.tcTheirClass = wx.TextCtrl(panel)
-			hbox.Add(self.tcTheirClass, proportion=1)
+			hbox.Add(self.tcTheirClass, flag=wx.EXPAND, proportion=1)
 
 			st1 = wx.StaticText(panel, label='Section')
 			st1.SetFont(font)
-			hbox.Add(st1, flag=wx.RIGHT, border=8)
+			hbox.Add(st1, flag=wx.LEFT|wx.TOP, border=6)
 
 			self.tcTheirSection = wx.TextCtrl(panel)
-			hbox.Add(self.tcTheirSection, proportion=1)
+			hbox.Add(self.tcTheirSection, flag=wx.EXPAND, proportion=1)
 
 		vbox.Add(hbox, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
 
@@ -93,7 +93,7 @@ class Example(wx.Frame):
 
 		st1 = wx.StaticText(panel, label='MyCall')
 		st1.SetFont(font)
-		hbox.Add(st1, flag=wx.BOTTOM, border=5)
+		hbox.Add(st1, flag=wx.LEFT|wx.TOP, border=6)
 
 		self.tcMyCall = wx.TextCtrl(panel)
 		self.tcMyCall.SetValue( settings.get( "logger.mycall" ) )

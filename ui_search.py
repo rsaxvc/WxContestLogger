@@ -28,7 +28,7 @@ class Example(wx.Frame):
 		hbox1 = wx.BoxSizer(wx.HORIZONTAL)
 		st1 = wx.StaticText(panel, label='Contact Callsign')
 		st1.SetFont(font)
-		hbox1.Add(st1, flag=wx.RIGHT, border=8)
+		hbox1.Add(st1, flag=wx.TOP, border=6)
 		self.tc = wx.TextCtrl(panel)
 		self.tc.Bind(wx.EVT_TEXT, self.OnSearchBoxUpdate)
 		hbox1.Add(self.tc, proportion=1)
