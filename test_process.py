@@ -11,6 +11,12 @@ from settings_manager import settings_manager
 from dbframe import framer
 from localtimeutil import local8601
 
+def countContacts(db):
+	count = 0
+	for r in db.search(db_manager.filter()):
+		count = count + 1
+	return count
+
 db = db_manager()
 s = settings_manager()
 
@@ -26,13 +32,44 @@ f['mycall'] = "KD0LIX"
 f['theircall'] = "KD0IXY"
 f['class'] = "1A"
 f['section'] = "KS"
-db.insert_frames( [ f ] )
 
+#test insert
+db.insert_frames( [ f ] )
 db.process_new_frames()
-count = 0
-for r in db.search(db_manager.filter()):
-	count = count + 1
-if( count == 1 ):
+if( countContacts( db ) == 1 ):
 	print "success"
 else:
-	print "failure"
+	print "failureA"
+
+#test second insert
+f['rec'] = 2
+f['seq'] = 2
+db.insert_frames( [ f ] )
+db.process_new_frames()
+if( countContacts( db ) == 2 ):
+	print "success"
+else:
+	print "failureB: RecordCount:", countContacts( db )
+
+#Test upsert
+f['rec'] = 2
+f['seq'] = 3
+db.insert_frames( [ f ] )
+db.process_new_frames()
+if( countContacts( db ) == 2 ):
+	print "success"
+else:
+	print "failureC: RecordCount:", countContacts( db )
+
+#Test delete
+f = {}
+f['uuid'] = s.get( 'uuid' )
+f['type'] = framer.typeDbDelete
+f['rec'] = 2
+f['seq'] = 4
+db.insert_frames( [ f ] )
+db.process_new_frames()
+if( countContacts( db ) == 1 ):
+	print "success"
+else:
+	print "failureD: RecordCount:", countContacts( db )
