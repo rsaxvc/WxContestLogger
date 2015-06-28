@@ -31,17 +31,6 @@ class Example(wx.Frame):
 		vbox = wx.BoxSizer(wx.VERTICAL)
 
 		hbox = wx.BoxSizer(wx.HORIZONTAL)
-		st1 = wx.StaticText(panel, label='MyCall')
-		st1.SetFont(font)
-		hbox.Add(st1, flag=wx.RIGHT, border=8)
-		self.tcMyCall = wx.TextCtrl(panel)
-		self.tcMyCall.SetValue( settings.get( "logger.mycall" ) )
-		hbox.Add(self.tcMyCall, proportion=1)
-		vbox.Add(hbox, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
-
-		vbox.Add((-1, 10))
-
-		hbox = wx.BoxSizer(wx.HORIZONTAL)
 		if(True):
 			st1 = wx.StaticText(panel, label='TheirCall')
 			st1.SetFont(font)
@@ -101,6 +90,15 @@ class Example(wx.Frame):
 		vbox.Add((-1, 10))
 
 		hbox = wx.BoxSizer(wx.HORIZONTAL)
+
+		st1 = wx.StaticText(panel, label='MyCall')
+		st1.SetFont(font)
+		hbox.Add(st1, flag=wx.BOTTOM, border=5)
+
+		self.tcMyCall = wx.TextCtrl(panel)
+		self.tcMyCall.SetValue( settings.get( "logger.mycall" ) )
+		hbox.Add(self.tcMyCall, flag=wx.BOTTOM, border=5)
+
 		btnClear = wx.Button(panel, label='Clear', size=(70, 30))
 		btnClear.Bind(wx.EVT_BUTTON, self.OnClearButtonClicked)
 		hbox.Add(btnClear, flag=wx.BOTTOM, border=5)
