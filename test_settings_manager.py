@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from settings_manager import settings_manager
 
 s = settings_manager()
