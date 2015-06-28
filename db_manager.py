@@ -187,7 +187,7 @@ class db_manager:
 		uuid = f['uuid']
 		uuid_idx = self._insert_uuid_if_needed( c, uuid )
 		if( f['type'] == framer.typeDbUpsert ):
-			c.execute( "INSERT OR REPLACE INTO contacts VALUES(?,?,?,?,?,?,?)", [ uuid_idx, f['rec'], f['mycall'], f['theircall'], f['band'], f['dt'], f['mode'] ] )
+			c.execute( "INSERT OR REPLACE INTO contacts VALUES(?,?,?,?,?,?,?,?,?)", [ uuid_idx, f['rec'], f['mycall'], f['theircall'], f['band'], f['dt'], f['mode'], f['class'], f['section'] ] )
 		elif( f['type'] == framer.typeDbDelete ):
 			c.execute( "DELETE FROM contacts WHERE client_uuid = ? AND client_rec = ?", [ uuid_idx, f['rec'] ] )
 		else:
@@ -202,13 +202,7 @@ class db_manager:
 		for client in client_list:
 			client_idx = client[0]
 			next_seq = client[1] + 1
-			while(True):
-				c.execute( "SELECT json FROM differences WHERE client_uuid = ? AND client_seq = ?", [ client_idx, next_seq ] )
-				row = c.fetchone()
-				if row == None:
-					break
-				elif row[0] == None:
-					break
+			for row in c.execute( "SELECT json FROM differences WHERE client_uuid = ? AND client_seq = ?", [ client_idx, next_seq ] ):
 				json_text = row[0]
 				import json
 				self._process_frame( c, json.loads( json_text ) )
