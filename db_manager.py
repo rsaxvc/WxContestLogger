@@ -17,6 +17,8 @@ class db_manager:
 		c.execute( "CREATE TABLE IF NOT EXISTS contacts( client_uuid INTEGER NOT NULL, client_rec INTEGER NOT NULL, mycall TEXT NOT NULL, theircall TEXT NOT NULL, band TEXT, datetime8601 TEXT, mode TEXT, class TEXT, section TEXT, foreign key( client_uuid ) REFERENCES clients( rowid ), PRIMARY KEY( client_uuid, client_rec ) )" )
 	class filter:
 		contains=""
+		band_exclude=[]
+		mode_exclude=[]
 
 	class search_result:
 		mycall=""
@@ -159,7 +161,13 @@ class db_manager:
 
 	def search( self, f ):
 		c = self.conn.cursor()
-		c.execute("SELECT mycall,theircall,band,datetime8601,mode,class,section FROM contacts WHERE theircall LIKE '%' || ? || '%' order by datetime8601 DESC ", [ f.contains ] )
+		bandfilter = ""
+		if( len( f.band_exclude ) ):
+			bandfilter = " AND band NOT IN ('" + "','".join(f.band_exclude) + "') ";
+		modefilter = ""
+		if( len( f.mode_exclude ) ):
+			modefilter = " AND mode NOT IN ('" + "','".join(f.mode_exclude) + "') ";
+		c.execute("SELECT mycall,theircall,band,datetime8601,mode,class,section FROM contacts WHERE theircall LIKE '%' || ? || '%'" + bandfilter  +  modefilter + "order by datetime8601 DESC ", [ f.contains ] )
 		while( True ):
 			row = c.fetchone()
 			if row == None:

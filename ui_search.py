@@ -65,6 +65,8 @@ class Example(wx.Frame):
 			cb = wx.CheckBox(panel, label=band )
 			cb.SetFont(font)
 			cb.SetValue( True )
+			cb.Bind(wx.EVT_LEFT_DOWN, self.OnBandUpdate)
+			cb.Bind(wx.EVT_KEY_DOWN, self.OnBandKeyDown)
 			hbox5.Add(cb, flag=wx.RIGHT, border=8, proportion=1)
 			self.bandswitches.append( cb )
 		vbox.Add(hbox5, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
@@ -78,14 +80,14 @@ class Example(wx.Frame):
 			cb = wx.CheckBox(panel, label=mode)
 			cb.SetFont(font)
 			cb.SetValue( True )
+			cb.Bind(wx.EVT_LEFT_DOWN, self.OnModeUpdate)
+			cb.Bind(wx.EVT_KEY_DOWN, self.OnBandKeyDown)
 			hbox6.Add(cb, flag=wx.RIGHT, border=8)
 			self.modeswitches.append( cb )
 		close_btn = wx.Button(panel, label='Close', size=(70, 30))
 		close_btn.Bind(wx.EVT_BUTTON, self.OnCloseButtonClicked)
 		hbox6.Add(close_btn, flag=wx.LEFT|wx.BOTTOM, border=5)
 
-#		vbox.Add(hbox15, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
-#		vbox.Add((-1, 10))
 		vbox.Add(hbox6, flag=wx.ALIGN_RIGHT|wx.RIGHT, border=10)
 
 		panel.SetSizer(vbox)
@@ -104,6 +106,36 @@ class Example(wx.Frame):
 
 	def OnSearchBoxUpdate(self,evnt):
 		self.filter.contains = self.tc.GetValue()
+		self.DisplayView()
+
+	def OnBandKeyDown(self,evnt):
+		if( evnt.GetKeyCode() == ord(' ') ):
+			self.OnBandUpdate( evnt )
+		else:
+			evnt.Skip()
+
+	def OnBandUpdate(self,evnt):
+		if( evnt.EventObject.GetValue() ):
+			evnt.EventObject.SetValue( False )
+			self.filter.band_exclude.append( evnt.EventObject.GetLabel() )
+		else:
+			evnt.EventObject.SetValue( True )
+			self.filter.band_exclude.remove( evnt.EventObject.GetLabel() )
+		self.DisplayView()
+
+	def OnModeKeyDown(self,evnt):
+		if( evnt.GetKeyCode() == ord(' ') ):
+			self.OnModeUpdate( evnt )
+		else:
+			evnt.Skip()
+
+	def OnModeUpdate(self,evnt):
+		if( evnt.EventObject.GetValue() ):
+			evnt.EventObject.SetValue( False )
+			self.filter.mode_exclude.append( evnt.EventObject.GetLabel() )
+		else:
+			evnt.EventObject.SetValue( True )
+			self.filter.mode_exclude.remove( evnt.EventObject.GetLabel() )
 		self.DisplayView()
 
 	def OnCloseButtonClicked(self,evnt):
